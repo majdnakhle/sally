@@ -1,0 +1,2349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sally's IMLE Prep — Israeli Medical Licensing Exam (06.10.2026)</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card2: #273449;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+    --good: #22c55e;
+    --bad: #ef4444;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #334155;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(160deg, #0f172a 0%, #131c31 100%);
+    color: var(--text);
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+  header {
+    padding: 28px 20px 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    background: rgba(15,23,42,0.6);
+  }
+  header h1 { margin: 0 0 6px; font-size: 1.7rem; }
+  header h1 .heart { color: #f472b6; }
+  header p { margin: 4px 0; color: var(--muted); font-size: 0.92rem; }
+  .badge {
+    display: inline-block; background: var(--accent2); color: #0b1120;
+    font-weight: 700; padding: 3px 12px; border-radius: 999px; font-size: 0.82rem; margin-top: 8px;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 20px 16px 80px; }
+
+  details.info {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 4px 18px; margin-bottom: 16px;
+  }
+  details.info summary {
+    cursor: pointer; font-weight: 700; padding: 12px 0; color: var(--accent);
+    font-size: 0.98rem;
+  }
+  details.info .body { padding: 0 0 14px; font-size: 0.9rem; }
+  details.info h4 { margin: 12px 0 4px; color: var(--accent2); }
+  details.info ul { margin: 6px 0; padding-left: 20px; }
+  details.info li { margin-bottom: 4px; }
+
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    margin: 18px 0 10px;
+  }
+  .filter-btn {
+    background: var(--card); color: var(--text); border: 1px solid var(--border);
+    padding: 7px 14px; border-radius: 999px; cursor: pointer; font-size: 0.85rem;
+    transition: all .15s;
+  }
+  .filter-btn:hover { border-color: var(--accent); }
+  .filter-btn.active { background: var(--accent); color: #05263a; font-weight: 700; border-color: var(--accent); }
+
+  .scorebar {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(30,41,59,0.95); backdrop-filter: blur(6px);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 10px 16px; margin-bottom: 18px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+    font-size: 0.9rem;
+  }
+  .scorebar strong { color: var(--accent); }
+  .progress { height: 6px; background: var(--card2); border-radius: 999px; overflow: hidden; flex-basis: 100%; margin-top: 6px; }
+  .progress > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .3s; }
+
+  .q-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px; margin-bottom: 18px; box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+  }
+  .q-topic {
+    display: inline-block; font-size: 0.72rem; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--accent2); font-weight: 700; margin-bottom: 8px;
+  }
+  .q-num { color: var(--muted); font-weight: 700; }
+  .q-text { font-size: 1.02rem; margin: 4px 0 14px; }
+  .options { list-style: none; padding: 0; margin: 0; }
+  .option {
+    border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; margin-bottom: 9px;
+    cursor: pointer; transition: all .12s; display: flex; gap: 10px; align-items: flex-start;
+    background: var(--card2);
+  }
+  .option:hover { border-color: var(--accent); }
+  .option .letter { font-weight: 700; color: var(--accent); flex-shrink: 0; }
+  .option.correct { border-color: var(--good); background: rgba(34,197,94,0.13); }
+  .option.correct .letter { color: var(--good); }
+  .option.wrong { border-color: var(--bad); background: rgba(239,68,68,0.13); }
+  .option.wrong .letter { color: var(--bad); }
+  .option.disabled { cursor: default; }
+
+  .explanation {
+    margin-top: 12px; padding: 13px 15px; border-radius: 10px;
+    background: rgba(56,189,248,0.08); border-left: 3px solid var(--accent);
+    font-size: 0.92rem; display: none;
+  }
+  .explanation.show { display: block; }
+  .explanation .verdict { font-weight: 700; margin-bottom: 5px; }
+  .explanation .verdict.right { color: var(--good); }
+  .explanation .verdict.wrongv { color: var(--bad); }
+  .explanation .ar {
+    margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);
+    direction: rtl; text-align: right; font-size: 0.95rem; color: #cbd5e1;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+  }
+  .explanation .ar .label { color: var(--accent2); font-weight: 700; }
+
+  footer { text-align: center; color: var(--muted); font-size: 0.78rem; padding: 20px; }
+  .disclaimer {
+    background: rgba(251,191,36,0.09); border: 1px solid #6b5320; color: #fcd34d;
+    border-radius: 10px; padding: 12px 16px; font-size: 0.82rem; margin-bottom: 18px;
+  }
+  .reset-btn {
+    background: var(--accent2); color: #0b1120; border: none; padding: 9px 20px;
+    border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 0.88rem;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="heart">&#9829;</span> Sally's IMLE Prep <span class="heart">&#9829;</span></h1>
+  <p>Israeli Government Medical Licensing Exam &middot; &#1489;&#1495;&#1497;&#1504;&#1514; &#1492;&#1512;&#1497;&#1513;&#1493;&#1497; &#1492;&#1502;&#1502;&#1513;&#1500;&#1514;&#1497;&#1514; &#1489;&#1512;&#1508;&#1493;&#1488;&#1492;</p>
+  <p>Internal Medicine &middot; Surgery &middot; Pediatrics &middot; OB-GYN &middot; Psychiatry</p>
+  <span class="badge">Exam day: 06.10.2026 &middot; Expo Tel Aviv</span>
+</header>
+
+<div class="wrap">
+  <div class="disclaimer">
+    <strong>Study aid — not the official exam.</strong> Questions are modeled on the IMLE blueprint
+    and on real recovered past papers (e.g., Part B 24.02.2025 and the June 2025 Internal Medicine paper).
+    Blueprint: 210 MCQs — 60 Internal Medicine, 50 Surgery, 50 Pediatrics, 30 OB-GYN, 20 Psychiatry; pass mark 60.
+    Official answers are judged against Harrison, Sabiston, Nelson, Lange OB-GYN & Kaplan-Sadock. Good luck, Sally!
+  </div>
+
+  <details class="info">
+    <summary>Who writes the exam &amp; what to expect (click to open)</summary>
+    <div class="body">
+      <h4>Who sets the exam</h4>
+      <ul>
+        <li>The exam is set and run by the <strong>Examinations Committee for Internship &amp; Licensing</strong>
+        of the <strong>Scientific Council of the Israel Medical Association (IMA / &#1492;&#1512;&quot;&#1497;)</strong>, on behalf of the Ministry of Health.</li>
+        <li>Committee chair: <strong>Dr. Aziz Daraushe (&#1491;&quot;&#1512; &#1491;&#1512;&#1488;&#1493;&#1513;&#1492; &#1506;&#1494;&#1497;&#1494;)</strong> — internal medicine / cardiology / emergency medicine.</li>
+        <li>The Supreme Examinations Committee has <strong>25 members + chair</strong>: 10 IMA reps, 10 from the
+        scientific (specialty) associations, plus hospital, community-clinic and resident reps. The chairs of the
+        Internal &amp; Surgical Boards also join. Questions come from the specialty associations, so expect
+        <em>textbook-anchored, guideline-based</em> single-best-answer items.</li>
+        <li>Appeals are decided by a separate appeals committee, strictly per the <strong>recommended textbook edition</strong>.</li>
+      </ul>
+      <h4>High-yield patterns seen in recent papers</h4>
+      <ul>
+        <li><strong>Surgery:</strong> bowel obstruction (adhesions), diverticular disease &amp; when to operate, hernia anatomy
+        (femoral, Spigelian), breast cancer surgery &amp; risk factors, pancreatitis, hepatobiliary (FNH, PSC&#8594;cholangiocarcinoma),
+        bariatric indications, wound healing (first cell = neutrophil), ATLS/damage-control &amp; hemorrhagic shock classes, melanoma ABCDE.</li>
+        <li><strong>Pediatrics:</strong> neonatology (NEC, TORCH — CMV, inborn errors like MSUD/MCADD), cardiology (ASD/VSD/coarctation
+        from cath data, myocarditis, rheumatic fever), nephrology (PSGN biopsy criteria, HUS, relapsing nephrotic), heme (ITP, Fanconi
+        anemia, iron-deficiency from cow's milk), orthopedics (SCFE, Osgood-Schlatter, transient synovitis), Guillain-Barré, febrile
+        seizure, ADEM, Kawasaki, genetic syndromes (Turner, DiGeorge/22q11, Down, ataxia-telangiectasia), toxicology (caustics, CCB
+        overdose), SIDS/BRUE, croup vs epiglottitis.</li>
+        <li><strong>Internal medicine:</strong> MODY vs T2DM, drug interactions (verapamil&#8594;digoxin, allopurinol+azathioprine),
+        hemolysis/PNH &amp; blood smears, mesothelioma (asbestos), Lemierre (Fusobacterium), ITP first-line therapy side effects,
+        HFrEF four pillars &amp; CRT, landmark trials (SPRINT, ACCOMPLISH, ALLHAT), COPD steroid harms, gout treatment pitfalls.</li>
+        <li><strong>OB-GYN:</strong> preeclampsia/eclampsia &amp; MgSO4, PPH (atony), placenta previa vs abruption, ectopic, CTG
+        interpretation, cervical screening.</li>
+        <li><strong>Psychiatry:</strong> NMS vs serotonin syndrome, MDD/bipolar/schizophrenia criteria, and Israeli law — the
+        <strong>District Psychiatrist</strong> and involuntary hospitalization.</li>
+      </ul>
+    </div>
+  </details>
+
+  <noscript>
+    <div class="disclaimer" style="background:rgba(239,68,68,0.12);border-color:#7f1d1d;color:#fca5a5">
+      <strong>JavaScript is turned off (or blocked by this viewer), so the 210 questions can't load.</strong><br>
+      This happens when the file is opened inside an email, Google Drive, or WhatsApp/Telegram preview.
+      Fix: save/download the file to your phone, then open it with <strong>Safari</strong> or <strong>Chrome</strong>.
+    </div>
+  </noscript>
+
+  <div class="controls" id="filters"></div>
+
+  <div class="scorebar">
+    <span>Answered: <strong id="answered">0</strong> / <span id="total">0</span></span>
+    <span>Correct: <strong id="correct" style="color:var(--good)">0</strong></span>
+    <span>Score: <strong id="pct">0%</strong></span>
+    <button class="reset-btn" onclick="resetQuiz()">Reset</button>
+    <div class="progress"><div id="progbar"></div></div>
+  </div>
+
+  <div id="quiz"></div>
+</div>
+
+<footer>
+  Made for Sally &bull; practice questions across all 5 IMLE subjects, modeled on real 24.02.2025 &amp; 06/2025 papers.<br>
+  Sources: IMA (ima.org.il), MOH syllabus, recovered past exams, Harrison / Sabiston / Nelson / Lange / Kaplan-Sadock.
+</footer>
+
+<script>
+const questions = [
+  // ---------------- INTERNAL MEDICINE ----------------
+  {
+    topic: "Internal Medicine",
+    q: "A 58-year-old man has 45 min of crushing substernal chest pain radiating to the left jaw with diaphoresis. ECG shows 3 mm ST elevation in V1–V4. The hospital has a 24/7 cath lab. Best next step?",
+    options: [
+      "Immediate cath-lab activation for primary PCI within 90 min of first medical contact",
+      "IV alteplase (tPA) then transfer to CCU",
+      "Serial troponins every 3 h before angiography",
+      "CT angiography of the chest to rule out dissection first"
+    ],
+    answer: 0,
+    exp: "Anterior STEMI. When a cath lab is available, primary PCI is the gold-standard reperfusion with a first-medical-contact-to-device target under 90 min. Fibrinolysis is reserved only when PCI cannot be delivered within 120 min.",
+    expAr: "احتشاء عضلة القلب الأمامي مع ارتفاع ST. عند توفر قسطرة على مدار الساعة، القسطرة الأولية (PCI) هي العلاج الأمثل لإعادة التروية خلال أقل من 90 دقيقة. تُستخدم مذيبات الجلطة فقط إذا تعذّر إجراء القسطرة خلال 120 دقيقة."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 64-year-old woman, ischemic cardiomyopathy, LVEF 28%, NYHA II despite target-dose enalapril and carvedilol. K 4.3, eGFR 58, BP 122/76. Which change gives the greatest mortality benefit?",
+    options: [
+      "Add digoxin and push carvedilol beyond max dose",
+      "Switch enalapril to sacubitril-valsartan (ARNI) after 36-h washout, add an SGLT2 inhibitor and an MRA (spironolactone)",
+      "Stop carvedilol, start verapamil",
+      "Start warfarin targeting INR 2.5–3.5"
+    ],
+    answer: 1,
+    exp: "The four pillars of HFrEF therapy that reduce mortality are ARNI, evidence-based beta-blocker, MRA, and SGLT2 inhibitor. ARNI requires a 36-h ACEi washout to avoid angioedema. The other options add no survival benefit and can cause harm.",
+    expAr: "الركائز الأربع لعلاج قصور القلب مع انخفاض الكسر القذفي (HFrEF) التي تقلل الوفيات هي: ARNI، حاصرات بيتا المثبتة، مضاد مستقبلات القشرانيات المعدنية (MRA)، ومثبط SGLT2. يتطلب ARNI فترة توقف 36 ساعة عن مثبط الإنزيم المحول لتجنب الوذمة الوعائية."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 72-year-old man: acute palpitations, dyspnea, BP 78/48, HR 164 irregularly irregular, SpO2 88%, bibasilar crackles. Monitor shows AF with rapid ventricular response. Immediate treatment?",
+    options: [
+      "IV diltiazem bolus then infusion",
+      "Oral amiodarone loading plus apixaban",
+      "Immediate synchronized electrical cardioversion",
+      "Carotid sinus massage then IV adenosine"
+    ],
+    answer: 2,
+    exp: "Any tachyarrhythmia with hemodynamic instability (hypotension, shock, ischemic pain, acute pulmonary edema, altered mentation) mandates immediate synchronized cardioversion. Rate/rhythm drugs act too slowly and can worsen shock.",
+    expAr: "أي اضطراب نظم سريع مصحوب بعدم استقرار الدورة الدموية (هبوط ضغط، صدمة، ألم إقفاري، وذمة رئة حادة، اضطراب وعي) يستوجب تقويم نظم كهربائي متزامن فوري. الأدوية تعمل ببطء وقد تزيد الصدمة سوءاً."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 34-year-old IV drug user has 2 weeks of fever, a holosystolic murmur at the LLSB increasing with inspiration, Janeway lesions, and Roth spots. Three cultures grow MRSA. Most expected echo finding and empiric therapy?",
+    options: [
+      "Bicuspid aortic calcification; IV ampicillin + ceftriaxone",
+      "Mitral leaflet perforation; oral linezolid monotherapy",
+      "Pulmonic stenosis; IV gentamicin + rifampin",
+      "Tricuspid valve mobile vegetation; IV vancomycin"
+    ],
+    answer: 3,
+    exp: "IV drug use predisposes to right-sided (tricuspid) endocarditis; S. aureus is the dominant pathogen. Murmur increasing with inspiration = Rivero-Carvallo sign. MRSA requires bactericidal IV vancomycin (or daptomycin).",
+    expAr: "تعاطي المخدرات الوريدية يهيّئ لالتهاب الشغاف الأيمن (الصمام ثلاثي الشرف)، والمكوّرات العنقودية الذهبية هي المسبب الأشيع. زيادة اللغط مع الشهيق = علامة ريفيرو-كارفالو. علاج MRSA يتطلب فانكومايسين وريدي."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 62-year-old man: sudden tearing chest pain radiating to the back between scapulae. BP 194/110 right arm, 142/82 left arm. CT confirms Stanford type A dissection of the ascending aorta. Definitive management?",
+    options: [
+      "Emergent surgical replacement of the ascending aorta plus IV beta-blockade (labetalol/esmolol)",
+      "Conservative ICU care with nitroprusside monotherapy",
+      "Catheter-directed thrombolysis of the false lumen",
+      "High-dose IV corticosteroid pulse and 14 days bed rest"
+    ],
+    answer: 0,
+    exp: "Stanford type A (ascending aorta) is a surgical emergency; mortality rises ~1–2% per hour. Emergent surgery is required. Stabilize by lowering shear stress (dP/dt) with IV beta-blockers to HR <60 and SBP 100–120.",
+    expAr: "تسلخ الأبهر نوع A (الأبهر الصاعد) حالة جراحية طارئة؛ الوفيات ترتفع 1-2% كل ساعة. الجراحة العاجلة ضرورية. يُخفض الإجهاد القصي بحاصرات بيتا الوريدية للوصول لنبض أقل من 60 وضغط انقباضي 100-120."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 68-year-old with severe COPD: 4 days of more dyspnea, more sputum volume, and purulence (Anthonisen type 1). SpO2 89%, ABG pH 7.34 / PaCO2 50 / PaO2 58. Besides O2 and short-acting bronchodilators, best regimen?",
+    options: [
+      "IV methylprednisolone for 21 days plus theophylline",
+      "Oral prednisone 40 mg/day for 5 days plus an oral antibiotic (amoxicillin-clavulanate or azithromycin)",
+      "High-dose inhaled fluticasone plus empiric vancomycin",
+      "Subcutaneous omalizumab plus montelukast"
+    ],
+    answer: 1,
+    exp: "Anthonisen type 1 exacerbation (all three cardinal symptoms) benefits from antibiotics. A short 5-day oral prednisone course shortens recovery and improves FEV1 without the morbidity of prolonged steroids.",
+    expAr: "تفاقم COPD نوع أنثونيسن 1 (الأعراض الرئيسية الثلاثة) يستفيد من المضادات الحيوية. كورس بريدنيزون فموي قصير لمدة 5 أيام يسرّع الشفاء ويحسّن FEV1 دون أضرار الستيرويد المطوّل."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 38-year-old woman: dry cough, exertional dyspnea, erythema nodosum, bilateral symmetric hilar lymphadenopathy, elevated ACE, biopsy shows non-caseating granulomas with negative fungal/AFB stains. Diagnosis?",
+    options: [
+      "Idiopathic pulmonary fibrosis",
+      "Pulmonary tuberculosis",
+      "Sarcoidosis (Löfgren syndrome variant)",
+      "Small-cell lung carcinoma"
+    ],
+    answer: 2,
+    exp: "Bilateral hilar lymphadenopathy + erythema nodosum + arthralgia = Löfgren syndrome, an acute sarcoidosis presentation with >85% spontaneous resolution. Non-caseating granulomas with negative stains are the hallmark.",
+    expAr: "اعتلال عقد لمفية نقيرية ثنائي + حمامى عقدة + ألم مفصلي = متلازمة لوفغرن، وهي شكل حاد من الساركويد يُشفى تلقائياً في أكثر من 85%. الورم الحبيبي غير الجُبني مع صبغات سلبية هو العلامة المميزة."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 71-year-old man: 3 days of fever, rust-colored sputum, pleuritic pain, T 38.8, BP 86/54, RR 32, SpO2 91%, disoriented, BUN 28 mg/dL, RLL consolidation. CURB-65 score and disposition?",
+    options: [
+      "Score 1; outpatient azithromycin",
+      "Score 2; outpatient amoxicillin",
+      "Score 3; ward with oral fluoroquinolone",
+      "Score 5; urgent admission (consider ICU) with parenteral antibiotics"
+    ],
+    answer: 3,
+    exp: "Confusion + Urea >19 + RR ≥30 + BP <90/≤60 + Age ≥65 = all 5 CURB-65 points. Score 3–5 is severe CAP needing urgent admission, monitoring, and IV antibiotics (e.g., ceftriaxone + azithromycin).",
+    expAr: "تشوّش + يوريا >19 + معدل تنفس ≥30 + ضغط <90/≤60 + عمر ≥65 = كل النقاط الخمس في CURB-65. النتيجة 3-5 تعني التهاب رئة شديد يحتاج إدخالاً عاجلاً ومضادات حيوية وريدية."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 52-year-old with alcoholic cirrhosis: hematemesis and melena, BP 88/52, HR 118. Along with resuscitation and urgent EGD within 12 h, which combination is mandatory?",
+    options: [
+      "Subcutaneous heparin and oral propranolol",
+      "IV vasoactive agent (terlipressin/octreotide) plus IV prophylactic ceftriaxone",
+      "Oral lactulose and IV furosemide",
+      "IV tranexamic acid and high-dose hydrocortisone"
+    ],
+    answer: 1,
+    exp: "Acute variceal bleeding requires an IV splanchnic vasoconstrictor (terlipressin/octreotide/somatostatin) to lower portal pressure, plus prophylactic antibiotics (ceftriaxone), which reduce infection, rebleeding, and mortality.",
+    expAr: "نزف الدوالي الحاد يتطلب مقبّض أوعية حشوي وريدي (تيرليبريسين/أوكتريوتيد) لخفض الضغط البابي، بالإضافة إلى مضاد حيوي وقائي (سيفترياكسون) الذي يقلل العدوى وإعادة النزف والوفيات."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 29-year-old woman with Graves disease presents with fever 40°C, HR 150 AF, agitation, and diarrhea after a recent infection. Which is NOT part of first-line thyroid storm therapy?",
+    options: [
+      "Propranolol",
+      "Propylthiouracil (PTU)",
+      "Iodine (Lugol's) given AFTER a thionamide",
+      "Oral levothyroxine"
+    ],
+    answer: 3,
+    exp: "Thyroid storm treatment: beta-blocker (propranolol), a thionamide (PTU preferred), iodine given at least 1 h AFTER the thionamide (to avoid fueling synthesis), plus hydrocortisone. Levothyroxine is contraindicated—it worsens the storm.",
+    expAr: "علاج العاصفة الدرقية: حاصر بيتا (بروبرانولول)، ثيوناميد (يُفضّل PTU)، يود يُعطى بعد الثيوناميد بساعة على الأقل، وهيدروكورتيزون. الليفوثيروكسين ممنوع لأنه يفاقم العاصفة."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 60-year-old man: fatigue, conjunctival pallor. Hb 7.8, MCV 68, low ferritin, low serum iron, high TIBC. Most appropriate next step in a man over 50?",
+    options: [
+      "Start oral iron and reassure",
+      "Colonoscopy / upper endoscopy to find a GI source of blood loss",
+      "Bone marrow biopsy",
+      "Transfuse and discharge"
+    ],
+    answer: 1,
+    exp: "Iron-deficiency anemia in an adult male (or postmenopausal woman) is GI blood loss until proven otherwise and requires endoscopic evaluation to exclude colorectal cancer, even while iron is replaced.",
+    expAr: "فقر الدم بعوز الحديد عند رجل بالغ (أو امرأة بعد سن اليأس) يُعتبر نزفاً هضمياً حتى يُثبت العكس، ويتطلب تنظيراً هضمياً لاستبعاد سرطان القولون، مع تعويض الحديد."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 55-year-old alcoholic presents with confusion, ophthalmoplegia, and ataxia. Before giving IV glucose you must administer?",
+    options: [
+      "Thiamine",
+      "Folate",
+      "Vitamin B12",
+      "Magnesium only"
+    ],
+    answer: 0,
+    exp: "Wernicke encephalopathy (confusion, ophthalmoplegia, ataxia) is caused by thiamine deficiency. Give thiamine BEFORE glucose, since glucose loading can precipitate or worsen Wernicke encephalopathy.",
+    expAr: "اعتلال دماغ فيرنيكه (تشوّش، شلل عضلات العين، ترنّح) سببه نقص الثيامين. يجب إعطاء الثيامين قبل الجلوكوز، لأن الجلوكوز قد يُحدث أو يفاقم اعتلال فيرنيكه."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A lean 19-year-old with mild fasting glucose ~130 mg/dL, BMI 22, and a strong autosomal-dominant family history (father and grandfather diagnosed at age 22, never ketoacidosis or complications). Most likely diagnosis and management?",
+    options: [
+      "Type 1 diabetes; start insulin immediately",
+      "MODY (maturity-onset diabetes of the young); many cases need only diet or a sulfonylurea, not early insulin",
+      "Type 2 diabetes; start metformin and lifestyle only",
+      "Latent autoimmune diabetes; start basal insulin"
+    ],
+    answer: 1,
+    exp: "Young, non-obese, strong autosomal-dominant history with mild stable hyperglycemia and no ketoacidosis suggests MODY. Depending on subtype (e.g., HNF1A, GCK), management is often diet alone or low-dose sulfonylurea rather than early insulin.",
+    expAr: "شاب نحيف مع قصة عائلية جسمية سائدة قوية وارتفاع سكر خفيف ثابت دون حماض كيتوني يشير إلى MODY. حسب النوع الفرعي، غالباً يكفي الحمية أو جرعة صغيرة من السلفونيل يوريا بدل الإنسولين المبكر."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A patient on digoxin for heart failure is started on verapamil. What is the expected drug interaction?",
+    options: [
+      "Increased digoxin concentration (risk of toxicity)",
+      "Decreased digoxin concentration",
+      "Increased verapamil concentration",
+      "No clinically relevant interaction"
+    ],
+    answer: 0,
+    exp: "Verapamil (a P-glycoprotein inhibitor) reduces renal clearance of digoxin, raising serum digoxin levels and the risk of toxicity. Digoxin dose should be reduced and levels monitored.",
+    expAr: "فيراباميل (مثبط للبروتين السكري P) يقلل الإطراح الكلوي للديجوكسين، فيرفع مستواه في الدم ويزيد خطر التسمم. يجب خفض جرعة الديجوكسين ومراقبة مستواه."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 70-year-old retired Haifa shipyard worker (smoker) has years of dyspnea, restrictive PFTs with low diffusion, and CT showing pleural plaques plus a left-lung mass. Biopsy is most likely to show?",
+    options: [
+      "Adenocarcinoma",
+      "Inflammatory pseudotumor",
+      "Mesothelioma",
+      "Pulmonary aspergilloma"
+    ],
+    answer: 2,
+    exp: "Occupational asbestos exposure (shipyards) plus pleural plaques and a pleural-based mass strongly suggest malignant mesothelioma. Asbestos is the key risk factor; latency is often decades.",
+    expAr: "التعرض المهني للأسبستوس (أحواض السفن) مع لويحات جنبية وكتلة جنبية يوجّه بقوة نحو ورم الميزوثيليوما الخبيث. الأسبستوس هو عامل الخطر الرئيسي وفترة الكمون غالباً عقود."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 30-year-old with a week of fever, neck pain/swelling, and a CT showing lung nodules; neck ultrasound reveals internal jugular vein thrombosis. Most likely pathogen (Lemierre syndrome)?",
+    options: [
+      "Staphylococcus aureus",
+      "Fusobacterium necrophorum",
+      "Peptostreptococcus",
+      "Nocardia spp."
+    ],
+    answer: 1,
+    exp: "Lemierre syndrome = oropharyngeal infection leading to septic thrombophlebitis of the internal jugular vein with septic pulmonary emboli, classically caused by Fusobacterium necrophorum.",
+    expAr: "متلازمة ليمير = عدوى بلعومية تؤدي إلى التهاب وريدي خثاري إنتاني في الوريد الوداجي الباطن مع صمّات رئوية إنتانية، وسببها الكلاسيكي جرثومة Fusobacterium necrophorum."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 60-year-old with a gout flare and CKD (Cr 1.7) is treated, and 2 weeks later develops proximal muscle weakness with elevated CPK. Which drug most likely caused this?",
+    options: [
+      "Prednisone",
+      "Etoricoxib",
+      "Allopurinol",
+      "Colchicine"
+    ],
+    answer: 3,
+    exp: "Colchicine can cause a myopathy/neuromyopathy (proximal weakness, elevated CK), especially in renal impairment where it accumulates. Dose reduction is essential in CKD.",
+    expAr: "الكولشيسين قد يسبب اعتلال عضلي (ضعف داني وارتفاع CK)، خاصة في القصور الكلوي حيث يتراكم. يجب خفض الجرعة في مرضى الكلى المزمن."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 32-year-old with wet purpura, gum bleeding, retinal hemorrhages, platelets 4,000, normal coagulation and other cell lines. First-line therapy (e.g., IVIG plus...) may cause which side effect?",
+    options: [
+      "Nephritic syndrome",
+      "Aseptic meningitis",
+      "Megaloblastic anemia",
+      "Hemolytic anemia"
+    ],
+    answer: 3,
+    exp: "This is severe immune thrombocytopenia (ITP). First-line agents include corticosteroids and IVIG; in Rh-positive, non-splenectomized patients, anti-D immunoglobulin can be used and may cause hemolytic anemia. IVIG can also rarely cause aseptic meningitis, but the classic hematologic adverse effect asked here is hemolysis.",
+    expAr: "هذه فرفرية نقص الصفيحات المناعية (ITP) الشديدة. العلاجات الأولى تشمل الستيرويدات وIVIG؛ وفي مرضى Rh الموجب غير المستأصلة طحالهم يُستخدم الغلوبولين المناعي anti-D الذي قد يسبب فقر دم انحلالي."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "Regarding landmark hypertension trials, which statement is correct?",
+    options: [
+      "SPRINT showed intensive control to SBP <120 reduced cardiovascular events in high-risk non-diabetic patients",
+      "ACCOMPLISH showed ACEi + diuretic beat ACEi + calcium-channel blocker",
+      "ALLHAT showed ACEi increased cardiac death vs calcium-channel blockers",
+      "ACCORD (BP) proved intensive control prevents MI in patients without diabetes"
+    ],
+    answer: 0,
+    exp: "SPRINT demonstrated that intensive BP lowering (target SBP <120 mmHg) reduced major cardiovascular events and mortality in high-risk non-diabetic patients. ACCOMPLISH actually favored ACEi + CCB over ACEi + diuretic.",
+    expAr: "أظهرت دراسة SPRINT أن الخفض المكثف للضغط (هدف انقباضي <120) يقلل الأحداث القلبية الوعائية الكبرى والوفيات لدى المرضى عاليي الخطورة غير السكريين. أما ACCOMPLISH ففضّلت ACEi + حاصر كالسيوم على ACEi + مدر."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "An 82-year-old Iraqi-born man presents with weakness, dark urine and jaundice a few days after a febrile illness; Hb 7.2, high reticulocytes, high indirect bilirubin, high LDH, negative direct Coombs, hemoglobinuria. Most likely mechanism?",
+    options: [
+      "G6PD deficiency causing oxidative hemolysis",
+      "Autoimmune (warm) hemolytic anemia",
+      "Iron deficiency anemia",
+      "Megaloblastic anemia"
+    ],
+    answer: 0,
+    exp: "Coombs-negative hemolysis triggered by infection/oxidative stress in a man of Mediterranean/Middle-Eastern descent points to G6PD deficiency (bite cells, Heinz bodies). Avoid oxidant drugs and fava beans.",
+    expAr: "انحلال دم مع كومبس سلبي محرَّض بعدوى/إجهاد تأكسدي عند رجل من أصل متوسطي يشير إلى عوز G6PD (خلايا مقضومة، أجسام هاينز). يجب تجنب الأدوية المؤكسدة والفول."
+  },
+
+  // ---------------- SURGERY ----------------
+  {
+    topic: "Surgery",
+    q: "A 25-year-old man after blunt trauma: BP 80/50, HR 130, distended abdomen, positive FAST for free fluid, remains hypotensive after 2 L crystalloid. Next step?",
+    options: [
+      "CT abdomen with contrast",
+      "Emergency exploratory laparotomy",
+      "Diagnostic peritoneal lavage then observe",
+      "Repeat FAST in 6 hours"
+    ],
+    answer: 1,
+    exp: "A hemodynamically unstable trauma patient with a positive FAST and no response to resuscitation needs immediate exploratory laparotomy. CT is only for stable patients—an unstable patient should never go to the CT scanner.",
+    expAr: "مريض رضح غير مستقر ديناميكياً مع FAST إيجابي ولا يستجيب للإنعاش يحتاج فتح بطن استكشافي فوري. التصوير المقطعي للمستقرين فقط—المريض غير المستقر لا يُنقل إلى جهاز CT."
+  },
+  {
+    topic: "Surgery",
+    q: "Which statement about acute postoperative bowel obstruction is most correct?",
+    options: [
+      "Over 90% are partial and resolve spontaneously without surgery",
+      "After laparoscopic surgery it is usually not related to a specific transition point",
+      "It should always be operated on as soon as possible",
+      "CT is not helpful in diagnosing the obstruction"
+    ],
+    answer: 0,
+    exp: "Early postoperative obstruction is usually adhesive and partial; the large majority resolve with conservative management (NG decompression, IV fluids, bowel rest). Surgery is reserved for strangulation, ischemia, or failure to resolve. CT is very helpful.",
+    expAr: "الانسداد المعوي المبكر بعد الجراحة غالباً التصاقي وجزئي، وتتحسن الغالبية بالعلاج المحافظ (تخفيف بأنبوب أنفي معدي، سوائل وريدية، راحة معوية). الجراحة للاختناق أو الإقفار أو عدم التحسن. التصوير المقطعي مفيد جداً."
+  },
+  {
+    topic: "Surgery",
+    q: "During ATLS primary survey, a trauma patient has tracheal deviation, absent breath sounds and hyperresonance on the right, distended neck veins, and hypotension. Immediate action?",
+    options: [
+      "Chest X-ray to confirm",
+      "Immediate needle decompression / finger thoracostomy then chest tube",
+      "Intubate and ventilate",
+      "Pericardiocentesis"
+    ],
+    answer: 1,
+    exp: "This is tension pneumothorax—a clinical diagnosis treated BEFORE imaging. Immediate needle decompression (2nd ICS midclavicular or 5th ICS anterior axillary) or finger thoracostomy, followed by a chest tube.",
+    expAr: "هذا استرواح صدر ضاغط—تشخيص سريري يُعالَج قبل التصوير. تخفيف فوري بالإبرة (الفراغ الوربي الثاني بخط منتصف الترقوة أو الخامس بالخط الإبطي الأمامي) أو بضع الصدر بالإصبع، ثم أنبوب صدري."
+  },
+  {
+    topic: "Surgery",
+    q: "A 70-year-old man: sudden severe tearing abdominal/back pain, pulsatile abdominal mass, BP 84/50. Most likely diagnosis?",
+    options: [
+      "Perforated peptic ulcer",
+      "Ruptured abdominal aortic aneurysm",
+      "Acute pancreatitis",
+      "Renal colic"
+    ],
+    answer: 1,
+    exp: "The triad of abdominal/back pain, a pulsatile mass, and hypotension in an older man is ruptured AAA. Unstable patients go straight to the OR (or EVAR); no CT if unstable.",
+    expAr: "ثالوث ألم البطن/الظهر + كتلة نابضة + هبوط ضغط عند رجل مسن = تمزق أم دم الأبهر البطني. المرضى غير المستقرين يُنقلون مباشرة للجراحة (أو EVAR) دون تصوير مقطعي."
+  },
+  {
+    topic: "Surgery",
+    q: "Which patient has an unequivocal indication for surgery for diverticular disease?",
+    options: [
+      "A 25-year-old after a first episode of sigmoid diverticulitis",
+      "A 65-year-old with right-colon diverticulitis",
+      "A 68-year-old with two episodes of uncomplicated diverticulitis in 2 years",
+      "A 70-year-old with sigmoid diverticulitis who developed a colovesical fistula and responded to antibiotics"
+    ],
+    answer: 3,
+    exp: "A colovesical fistula is a complicated diverticular disease and a clear surgical indication (elective resection), even after antibiotic response. A single or few uncomplicated episodes are managed conservatively.",
+    expAr: "الناسور القولوني المثاني اختلاط لمرض الرتوج ويُعدّ استطباباً جراحياً واضحاً (استئصال انتقائي) حتى بعد الاستجابة للمضاد الحيوي. النوبات غير المختلطة القليلة تُدار بشكل محافظ."
+  },
+  {
+    topic: "Surgery",
+    q: "A 48-year-old woman: RUQ pain after fatty meals, Murphy's sign positive, fever, WBC elevated, ultrasound shows gallstones with a thickened wall and pericholecystic fluid. Best management?",
+    options: [
+      "Biliary colic; elective surgery in 3 months",
+      "Acute cholecystitis; early laparoscopic cholecystectomy plus antibiotics",
+      "Choledocholithiasis; ERCP only",
+      "Gallbladder cancer; palliative care"
+    ],
+    answer: 1,
+    exp: "Positive Murphy sign, fever, leukocytosis and US wall thickening/pericholecystic fluid indicate acute cholecystitis. Early (within 72 h) laparoscopic cholecystectomy plus antibiotics is preferred over delayed surgery.",
+    expAr: "علامة ميرفي الإيجابية والحمى وكثرة الكريات وسماكة الجدار/السائل حول المرارة تدل على التهاب مرارة حاد. يُفضّل استئصال المرارة بالمنظار المبكر (خلال 72 ساعة) مع المضادات الحيوية."
+  },
+  {
+    topic: "Surgery",
+    q: "Which anatomical landmarks (superior: iliopubic tract; inferior: Cooper's ligament; lateral: femoral vein; medial: lacunar ligament) define the hernia sac location?",
+    options: [
+      "Direct inguinal hernia",
+      "Indirect inguinal hernia",
+      "Femoral hernia",
+      "Sliding hernia"
+    ],
+    answer: 2,
+    exp: "Those borders describe the femoral canal, so a hernia there is a femoral hernia—more common in women and at high risk of incarceration/strangulation, usually warranting repair.",
+    expAr: "هذه الحدود تصف القناة الفخذية، لذا الفتق فيها هو فتق فخذي—أشيع عند النساء وعالي خطر الانحباس/الاختناق، ويستدعي عادةً الإصلاح الجراحي."
+  },
+  {
+    topic: "Surgery",
+    q: "During recovery from a surgical wound, which cell is the FIRST to appear in the healing wound?",
+    options: [
+      "Neutrophils",
+      "Macrophages",
+      "Fibroblasts",
+      "Lymphocytes"
+    ],
+    answer: 0,
+    exp: "Neutrophils arrive first (inflammatory phase, days 1–2) to debride and fight infection; macrophages follow (~day 2–3) and orchestrate healing, then fibroblasts drive the proliferative phase.",
+    expAr: "العدلات (النيوتروفيل) تصل أولاً في الطور الالتهابي (اليوم 1-2) للتنظيف ومكافحة العدوى؛ تتبعها البلاعم (اليوم 2-3) لتنظيم الالتئام، ثم الأرومات الليفية في الطور التكاثري."
+  },
+  {
+    topic: "Surgery",
+    q: "A 57-year-old woman with a 2 cm invasive ductal carcinoma of the right breast and clinically negative axillary nodes is planned for surgery. Which statement is most correct?",
+    options: [
+      "There is no survival advantage of modified radical mastectomy over lumpectomy + radiation",
+      "Radical mastectomy is preferred over modified radical mastectomy",
+      "Prophylactic contralateral mastectomy should be done at the same operation",
+      "Complete axillary lymph node dissection is mandatory"
+    ],
+    answer: 0,
+    exp: "Breast-conserving surgery (lumpectomy) plus radiation gives equivalent survival to mastectomy for early breast cancer. With clinically negative nodes, sentinel lymph node biopsy—not full axillary dissection—is standard.",
+    expAr: "الجراحة المحافظة (استئصال الورم) مع الإشعاع تعطي بقاءً مماثلاً لاستئصال الثدي في السرطان المبكر. مع عقد سلبية سريرياً، خزعة العقدة الحارسة—وليس التجريف الإبطي الكامل—هي المعيار."
+  },
+  {
+    topic: "Surgery",
+    q: "What is the most common cause of small bowel obstruction in adults?",
+    options: [
+      "Primary small-bowel tumor",
+      "Incarcerated hernia",
+      "Bezoar (impacted food)",
+      "Post-operative adhesions"
+    ],
+    answer: 3,
+    exp: "Adhesions from prior abdominal/pelvic surgery are the most common cause of small-bowel obstruction. (Hernia is the most common cause in patients without prior surgery.)",
+    expAr: "الالتصاقات الناتجة عن جراحة بطنية/حوضية سابقة هي السبب الأشيع لانسداد الأمعاء الدقيقة. (الفتق هو الأشيع عند من لم يخضعوا لجراحة سابقة.)"
+  },
+  {
+    topic: "Surgery",
+    q: "Which benign lesion carries a risk of progressing to colorectal cancer?",
+    options: [
+      "Hamartoma",
+      "Inflammatory polyp",
+      "Sessile serrated polyp",
+      "Hyperplastic polyp"
+    ],
+    answer: 2,
+    exp: "Sessile serrated polyps (via the serrated pathway) have malignant potential and require removal and surveillance. Small hyperplastic and inflammatory polyps are generally not premalignant.",
+    expAr: "السلائل المسننة اللاطئة (عبر المسار المسنن) لها إمكانية خباثة وتتطلب الاستئصال والمتابعة. السلائل مفرطة التنسج والالتهابية الصغيرة عادةً غير سرطانية."
+  },
+  {
+    topic: "Surgery",
+    q: "A finding in the right liver lobe: a 10 cm lesion with a central scar and radiating fibrous septa, discovered incidentally. Most likely diagnosis?",
+    options: [
+      "Focal nodular hyperplasia (FNH)",
+      "Cholangiocarcinoma",
+      "Hemangioma",
+      "Hepatic adenoma"
+    ],
+    answer: 0,
+    exp: "A central stellate scar with radiating septa is the classic feature of focal nodular hyperplasia, a benign lesion that usually only needs observation. Adenoma (linked to OCPs) risks bleeding/malignancy.",
+    expAr: "الندبة النجمية المركزية مع الحواجز المتشعبة هي السمة الكلاسيكية لفرط التنسج العقدي البؤري (FNH)، آفة حميدة تحتاج غالباً للمراقبة فقط. أما الورم الغدي (المرتبط بحبوب منع الحمل) فيهدد بالنزف/الخباثة."
+  },
+  {
+    topic: "Surgery",
+    q: "Which biliary condition is the major risk factor for developing cholangiocarcinoma in adults?",
+    options: [
+      "Choledocholithiasis",
+      "Primary sclerosing cholangitis (PSC)",
+      "Chronic cholecystitis",
+      "Choledochal cyst"
+    ],
+    answer: 1,
+    exp: "Primary sclerosing cholangitis (strongly associated with ulcerative colitis) is the leading risk factor for cholangiocarcinoma in adults. Choledochal cysts also raise risk but are less common.",
+    expAr: "التهاب الأقنية الصفراوية المصلب الأولي (المرتبط بقوة بالتهاب القولون التقرحي) هو أهم عامل خطر لسرطان الأقنية الصفراوية عند البالغين. الكيسات القناتية ترفع الخطر أيضاً لكنها أقل شيوعاً."
+  },
+  {
+    topic: "Surgery",
+    q: "Which of the ABCDE criteria for a suspicious melanocytic lesion is NOT part of the mnemonic?",
+    options: [
+      "Color variation",
+      "Depth of the lesion",
+      "Border irregularity",
+      "Evolution over time"
+    ],
+    answer: 1,
+    exp: "ABCDE = Asymmetry, Border irregularity, Color variation, Diameter (>6 mm), Evolution. 'Depth' (Breslow thickness) is a prognostic staging measure, not a screening criterion.",
+    expAr: "معايير ABCDE = عدم التناظر، حواف غير منتظمة، تغيّر اللون، القطر (>6 مم)، التطوّر مع الزمن. أما 'العمق' (سماكة برسلو) فهو مقياس إنذاري للمرحلة وليس معيار فحص."
+  },
+
+  // ---------------- PEDIATRICS ----------------
+  {
+    topic: "Pediatrics",
+    q: "A 6-month-old has 3 days of coryza then wheeze, tachypnea, and fine crackles in winter. RSV is likely. Cornerstone of bronchiolitis management?",
+    options: [
+      "Supportive care: oxygen, hydration, nasal suctioning",
+      "Routine nebulized salbutamol",
+      "Systemic corticosteroids",
+      "Empiric IV antibiotics"
+    ],
+    answer: 0,
+    exp: "Bronchiolitis (usually RSV) is managed supportively—oxygen, hydration, suctioning. Bronchodilators, steroids, and antibiotics are not routinely beneficial in typical bronchiolitis.",
+    expAr: "التهاب القصيبات (غالباً RSV) يُدار بالعلاج الداعم—أكسجين، إماهة، شفط الأنف. موسّعات القصبات والستيرويدات والمضادات الحيوية لا تفيد روتينياً في الحالة النموذجية."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 4-year-old (unvaccinated) with drooling, tripod posture, high fever, muffled voice, and stridor. What is contraindicated before securing the airway?",
+    options: [
+      "Keeping the child calm with the parent",
+      "Examining the throat with a tongue depressor",
+      "Preparing for controlled intubation in the OR",
+      "Giving oxygen as tolerated"
+    ],
+    answer: 1,
+    exp: "This is epiglottitis (classically H. influenzae type b). Do NOT examine the throat or agitate the child—it can precipitate complete airway obstruction. Secure the airway in a controlled setting (OR) first.",
+    expAr: "هذا التهاب لسان المزمار (عادةً المستدمية النزلية نوع b). لا تفحص الحلق ولا تُهيّج الطفل—فقد يُحدث انسداداً تنفسياً كاملاً. أمِّن المجرى الهوائي أولاً في بيئة مضبوطة (غرفة العمليات)."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 3-week-old firstborn boy: projectile non-bilious vomiting, hungry after vomiting, palpable epigastric 'olive'. Expected electrolyte disturbance?",
+    options: [
+      "Hypochloremic, hypokalemic metabolic alkalosis",
+      "High anion-gap metabolic acidosis",
+      "Hyperchloremic metabolic acidosis",
+      "Respiratory alkalosis"
+    ],
+    answer: 0,
+    exp: "Hypertrophic pyloric stenosis causes loss of gastric HCl → hypochloremic, hypokalemic metabolic alkalosis. Correct fluids/electrolytes first, then perform pyloromyotomy (definitive treatment).",
+    expAr: "تضيّق البواب الضخامي يسبب فقدان حمض المعدة → قلاء استقلابي ناقص الكلور وناقص البوتاسيوم. يُصحّح السوائل والشوارد أولاً ثم تُجرى خزع البواب (العلاج النهائي)."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 5-year-old develops periorbital edema, tea-colored urine, and hypertension 2 weeks after a sore throat. Most likely diagnosis?",
+    options: [
+      "Post-streptococcal glomerulonephritis",
+      "Minimal change disease",
+      "Henoch-Schönlein purpura nephritis",
+      "Acute pyelonephritis"
+    ],
+    answer: 0,
+    exp: "Gross hematuria (tea-colored urine), edema, and hypertension 1–2 weeks after a strep infection is post-streptococcal glomerulonephritis (nephritic). Low C3 and elevated ASO support it; management is supportive.",
+    expAr: "بيلة دموية (بول بلون الشاي) ووذمة وارتفاع ضغط بعد أسبوع-أسبوعين من عدوى عقدية = التهاب كبب الكلية بعد العقديات (نمط كلوي). انخفاض C3 وارتفاع ASO يدعمان التشخيص، والعلاج داعم."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A child <5 with fever ≥5 days, bilateral non-exudative conjunctivitis, cracked red lips/strawberry tongue, cervical lymphadenopathy, and hand/foot edema. Treatment to prevent coronary aneurysms?",
+    options: [
+      "IV immunoglobulin plus aspirin",
+      "IV ceftriaxone",
+      "Oral acyclovir",
+      "Corticosteroids alone"
+    ],
+    answer: 0,
+    exp: "This is Kawasaki disease. IVIG plus aspirin, given ideally within 10 days of fever onset, markedly reduces the risk of coronary artery aneurysms. Echocardiography is used to monitor the coronaries.",
+    expAr: "هذا داء كاواساكي. الغلوبولين المناعي الوريدي (IVIG) مع الأسبرين، ويُفضّل خلال 10 أيام من بدء الحمى، يقلل بشكل كبير خطر أم دم الشرايين التاجية. يُستخدم تخطيط صدى القلب لمراقبة التاجيات."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 10-year-old develops ascending symmetric limb weakness over ~5 days with reduced reflexes, 2 weeks after a diarrheal illness, now with breathing difficulty. Best treatment?",
+    options: [
+      "Active and passive vaccination against the pathogen",
+      "Antibiotics for the diarrheal illness",
+      "Observation and await spontaneous recovery",
+      "IV immunoglobulin (IVIG)"
+    ],
+    answer: 3,
+    exp: "Guillain-Barré syndrome (often post-Campylobacter) causes ascending weakness with areflexia. IVIG (or plasmapheresis) is the treatment, with close monitoring of respiratory function/vital capacity.",
+    expAr: "متلازمة غيلان باريه (غالباً بعد العطيفة/Campylobacter) تسبب ضعفاً صاعداً مع غياب المنعكسات. العلاج هو IVIG (أو فصادة البلازما) مع مراقبة دقيقة للوظيفة التنفسية والسعة الحيوية."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 4-month-old has a first generalized seizure lasting ~1 minute with fever 39°C, is fully alert afterward, with a normal exam and no focal signs. Most appropriate next step?",
+    options: [
+      "Start antiepileptic therapy",
+      "Give antipyretics and observe",
+      "Perform lumbar puncture to rule out meningitis",
+      "Urgent brain imaging"
+    ],
+    answer: 2,
+    exp: "A simple febrile seizure typically occurs from 6 months to 5 years. Under 6 months (or with any red flags) meningitis must be excluded—so at 4 months, lumbar puncture is the prudent next step. Older, well-appearing children with a simple febrile seizure usually just need antipyretics and observation.",
+    expAr: "الاختلاج الحروري البسيط يحدث عادةً بين 6 أشهر و5 سنوات. تحت 6 أشهر (أو مع أي علامات إنذار) يجب استبعاد التهاب السحايا—لذا في عمر 4 أشهر، البزل القطني هو الخطوة الحكيمة. الأطفال الأكبر بحالة جيدة يكفيهم خافض حرارة ومراقبة."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 2-year-old swallowed several of a grandparent's antihypertensive pills; now drowsy with bradycardia and hypotension. Most appropriate antidote?",
+    options: [
+      "Glucagon",
+      "Flumazenil",
+      "N-acetylcysteine",
+      "Pyridoxine"
+    ],
+    answer: 0,
+    exp: "Bradycardia + hypotension after ingestion of antihypertensives suggests beta-blocker or calcium-channel-blocker overdose. Glucagon is a key antidote (bypasses beta-receptor blockade to raise cAMP); calcium, high-dose insulin/glucose, and vasopressors are also used.",
+    expAr: "بطء القلب مع هبوط الضغط بعد ابتلاع خافضات ضغط يشير إلى جرعة زائدة من حاصر بيتا أو حاصر قنوات الكالسيوم. الغلوكاغون ترياق أساسي (يرفع cAMP متجاوزاً حصار مستقبل بيتا)، ويُستخدم أيضاً الكالسيوم والإنسولين عالي الجرعة."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 2-year-old swallowed a toilet-bowl cleaner (caustic), with vomiting, drooling, oral burning, and tachypnea. Most appropriate immediate management?",
+    options: [
+      "Urgent activated charcoal to neutralize the agent",
+      "IV fluids and supportive monitoring (airway, no blind instrumentation)",
+      "Immediate gastric lavage to remove the agent",
+      "Steroids to reduce edema"
+    ],
+    answer: 1,
+    exp: "In caustic ingestion, do NOT induce vomiting, give charcoal, or perform gastric lavage/neutralization—these worsen injury. Provide airway assessment, IV fluids, analgesia, NPO, and arrange endoscopy to grade the injury.",
+    expAr: "في ابتلاع المواد الكاوية، ممنوع تحريض القيء أو إعطاء الفحم أو غسل المعدة/المعادلة—فكلها تزيد الأذية. يُقيّم المجرى الهوائي وتُعطى سوائل وريدية ومسكنات، مع الصيام وترتيب تنظير لتصنيف الأذية."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A term newborn (BW 1900 g) with head circumference <3rd percentile; cranial ultrasound shows periventricular calcifications; diagnosis confirmed by urine PCR. Most common complication of this congenital infection?",
+    options: [
+      "Sensorineural hearing loss",
+      "Early cataract",
+      "Dental deformities",
+      "Aortic stenosis"
+    ],
+    answer: 0,
+    exp: "Periventricular calcifications + microcephaly + urine PCR = congenital CMV. The most common long-term complication is sensorineural hearing loss (periventricular calcification is characteristic of CMV; toxoplasmosis causes diffuse intracranial calcifications).",
+    expAr: "تكلسات حول البطينات + صغر الرأس + PCR في البول = عدوى المضخم الخلوي الخلقية (CMV). أشيع اختلاط بعيد المدى هو فقدان السمع الحسي العصبي (التكلس حول البطيني مميز لـCMV؛ أما داء المقوسات فيسبب تكلسات دماغية منتشرة)."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 12-year-old girl: short stature, broad chest, delayed puberty. Which test is a high-yield part of her follow-up (suspected Turner syndrome)?",
+    options: [
+      "Fecal calprotectin",
+      "Slit-lamp eye exam",
+      "Echocardiography and 4-limb blood pressure",
+      "Post-bronchodilator pulmonary function tests"
+    ],
+    answer: 2,
+    exp: "Turner syndrome (45,X) is associated with cardiovascular anomalies—bicuspid aortic valve and coarctation of the aorta—so echocardiography and 4-limb BP are essential. Renal anomalies and hypothyroidism are also screened.",
+    expAr: "متلازمة تيرنر (45,X) ترتبط بتشوهات قلبية وعائية—صمام أبهري ثنائي الشرف وتضيّق الأبهر—لذا تخطيط صدى القلب وقياس الضغط في الأطراف الأربعة ضروريان. كما يُفحص عن تشوهات كلوية وقصور درقي."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 16-year-old boy has BP 160/70 in the right arm; cardiac catheterization shows aortic pressure 160/70 ascending but 100/80 descending, with normal chamber saturations. Structural diagnosis?",
+    options: [
+      "Large secundum atrial septal defect",
+      "Moderate ventricular septal defect",
+      "Coarctation of the aorta",
+      "Aortic valve stenosis"
+    ],
+    answer: 2,
+    exp: "A pressure gradient between the ascending aorta (high) and descending aorta (low) with upper-limb hypertension and no oxygen step-up is classic for coarctation of the aorta. A shunt (ASD/VSD) would show an oxygen saturation step-up.",
+    expAr: "وجود فرق ضغط بين الأبهر الصاعد (مرتفع) والنازل (منخفض) مع ارتفاع ضغط في الطرف العلوي دون قفزة أكسجين = تضيّق الأبهر النموذجي. التحويلة (ASD/VSD) كانت ستُظهر قفزة في إشباع الأكسجين."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 4-year-old, 2 weeks after a viral URI: no fever, RR 40, irregular rhythm with a gallop, 2/6 systolic murmur, and hepatomegaly. Most likely diagnosis?",
+    options: [
+      "Infective endocarditis",
+      "Acute rheumatic fever",
+      "Viral myocarditis",
+      "Paroxysmal atrial fibrillation"
+    ],
+    answer: 2,
+    exp: "Post-viral onset with signs of heart failure (gallop, tachypnea, hepatomegaly) and arrhythmia in a young child suggests viral myocarditis. Management is supportive heart-failure care with close monitoring.",
+    expAr: "بدء الأعراض بعد عدوى فيروسية مع علامات قصور قلب (خبب، تسرّع تنفس، ضخامة كبد) واضطراب نظم عند طفل صغير يشير إلى التهاب عضلة القلب الفيروسي. العلاج داعم لقصور القلب مع مراقبة دقيقة."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 4-year-old with bloody diarrhea for a week now develops pallor, weakness, acute kidney injury, anemia, and thrombocytopenia. Which best describes the anemia?",
+    options: [
+      "Aplastic anemia",
+      "Iron deficiency anemia due to GI bleeding",
+      "Coombs-positive hemolytic anemia",
+      "Microangiopathic hemolytic anemia"
+    ],
+    answer: 3,
+    exp: "Hemolytic uremic syndrome (usually Shiga-toxin E. coli O157:H7) causes the triad of microangiopathic hemolytic anemia (schistocytes, Coombs-negative), thrombocytopenia, and acute kidney injury. Treatment is mainly supportive; avoid antibiotics/antimotility agents.",
+    expAr: "متلازمة انحلال الدم اليوريمية (عادةً إشريكية قولونية منتجة لذيفان شيغا O157:H7) تسبب ثالوث فقر دم انحلالي مجهري الأوعية (خلايا مجزأة، كومبس سلبي) ونقص صفيحات وأذية كلوية حادة. العلاج داعم، مع تجنب المضادات الحيوية ومضادات الحركة."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 14-year-old girl: 2 months of a firm, non-tender, fixed enlarged cervical lymph node, fatigue, weight loss, night sweats, no response to antibiotics, elevated LDH. Best next step?",
+    options: [
+      "Bone marrow aspiration",
+      "MRI of the neck",
+      "Excisional lymph node biopsy",
+      "Observe for another month"
+    ],
+    answer: 2,
+    exp: "A firm, fixed, painless node with B-symptoms and high LDH not responding to antibiotics is suspicious for lymphoma (e.g., Hodgkin). Excisional lymph node biopsy is the diagnostic gold standard.",
+    expAr: "عقدة لمفية قاسية ثابتة غير مؤلمة مع أعراض B وارتفاع LDH لا تستجيب للمضادات الحيوية تثير الشك بلمفوما (مثل هودجكن). الخزعة الاستئصالية للعقدة هي المعيار الذهبي للتشخيص."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 3-year-old with a 'maple syrup' urine odor, vomiting, hypotonia, and poor feeding from day 2 of life. Which test best advances the diagnosis?",
+    options: [
+      "Very-long-chain fatty acids",
+      "Urine ketones",
+      "Plasma amino acids",
+      "Serum transferrin isoforms"
+    ],
+    answer: 2,
+    exp: "Sweet/maple-syrup urine odor with neonatal encephalopathy suggests Maple Syrup Urine Disease (branched-chain ketoacid dehydrogenase defect). Plasma amino acids show elevated leucine, isoleucine, and valine.",
+    expAr: "رائحة البول الحلوة (شراب القيقب) مع اعتلال دماغي وليدي تشير إلى داء بول شراب القيقب (خلل نازعة هيدروجين الكيتو أحماض متفرعة السلسلة). الأحماض الأمينية في البلازما تُظهر ارتفاع اللوسين والآيزولوسين والفالين."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 13-year-old obese boy has hip/knee pain and limited internal rotation of the left hip; he holds the leg externally rotated. X-ray is diagnostic. Best initial management?",
+    options: [
+      "Activity restriction and non-weight-bearing until surgery",
+      "Calcium and vitamin D",
+      "Oral antibiotics",
+      "Systemic steroids"
+    ],
+    answer: 0,
+    exp: "Slipped capital femoral epiphysis (SCFE) presents in obese adolescents with hip/knee pain and limited internal rotation. Make the child non-weight-bearing to prevent further slip; treatment is surgical in-situ pinning.",
+    expAr: "انزلاق المشاشة الفخذية العلوية (SCFE) يظهر عند المراهقين البدينين مع ألم ورك/ركبة ومحدودية الدوران الداخلي. يجب منع تحميل الوزن لمنع مزيد من الانزلاق، والعلاج تثبيت جراحي بمسمار في مكانه."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 6-year-old girl with acute right hip pain 1 week after a mild febrile illness, refusing to bear weight, but normal CBC and CRP, and a small clear joint effusion on ultrasound. Recommended treatment?",
+    options: [
+      "NSAIDs (transient synovitis)",
+      "Broad-spectrum antibiotics",
+      "Systemic steroids",
+      "Surgical drainage"
+    ],
+    answer: 0,
+    exp: "Transient (toxic) synovitis follows a viral illness, with normal inflammatory markers and a small effusion; it is self-limited and treated with NSAIDs and rest. Elevated CRP/ESR, fever, and refusal to bear weight would raise concern for septic arthritis (needs drainage).",
+    expAr: "الالتهاب الزليلي العابر يتبع مرضاً فيروسياً مع واسمات التهابية طبيعية وانصباب بسيط؛ محدود ذاتياً ويُعالَج بمضادات الالتهاب اللاستيرويدية والراحة. ارتفاع CRP والحمى ورفض تحميل الوزن يثير القلق من التهاب مفصل إنتاني (يحتاج تفجيراً)."
+  },
+
+  // ---------------- OB-GYN ----------------
+  {
+    topic: "OB-GYN",
+    q: "A 30-week pregnant woman has BP 165/110, 3+ proteinuria, headache, and a seizure. First-line drug to treat and prevent further eclamptic seizures?",
+    options: [
+      "IV magnesium sulfate",
+      "IV diazepam",
+      "IV phenytoin",
+      "IV labetalol only"
+    ],
+    answer: 0,
+    exp: "Magnesium sulfate is first-line to treat and prevent eclamptic seizures and is superior to phenytoin/diazepam. Antihypertensives (labetalol, hydralazine, nifedipine) control BP; definitive treatment is delivery.",
+    expAr: "كبريتات المغنيسيوم هي الخيار الأول لعلاج ومنع اختلاجات الإرجاج وهي أفضل من الفينيتوين/الديازيبام. خافضات الضغط (لابيتالول، هيدرالازين، نيفيديبين) تضبط الضغط، والعلاج النهائي هو الولادة."
+  },
+  {
+    topic: "OB-GYN",
+    q: "Immediately after vaginal delivery a woman has heavy bleeding; the uterus is soft and boggy. Most common cause and first-line management of postpartum hemorrhage?",
+    options: [
+      "Uterine atony; uterine massage and oxytocin",
+      "Retained placenta; immediate hysterectomy",
+      "Coagulopathy; give factor VIII",
+      "Cervical laceration; observe"
+    ],
+    answer: 0,
+    exp: "Uterine atony is the most common cause of PPH. First-line: bimanual uterine massage and uterotonics (oxytocin first, then ergometrine, carboprost, misoprostol). Escalate to balloon tamponade/surgery if refractory.",
+    expAr: "ونى الرحم هو السبب الأشيع للنزف التالي للولادة. الخط الأول: تدليك الرحم اليدوي ومقبضات الرحم (أوكسيتوسين أولاً ثم إرغومترين، كاربوبروست، ميزوبروستول). يُصعّد إلى بالون ضاغط/جراحة عند عدم الاستجابة."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A woman at 32 weeks has painless bright-red vaginal bleeding. Which examination is contraindicated until placenta previa is excluded?",
+    options: [
+      "Ultrasound",
+      "Digital vaginal examination",
+      "Maternal vital signs",
+      "Fetal heart monitoring"
+    ],
+    answer: 1,
+    exp: "Painless third-trimester bleeding suggests placenta previa. Digital vaginal exam is contraindicated (can provoke catastrophic hemorrhage) until previa is excluded by ultrasound. In contrast, abruption is typically painful bleeding.",
+    expAr: "النزف غير المؤلم في الثلث الأخير يوحي بالمشيمة المنزاحة. الفحص المهبلي بالإصبع ممنوع (قد يُحدث نزفاً كارثياً) حتى استبعاد الانزياح بالتصوير. بالمقابل، الانفصال المشيمي غالباً نزف مؤلم."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A 26-year-old with 7 weeks amenorrhea, unilateral pelvic pain, spotting, positive pregnancy test; ultrasound shows an empty uterus with an adnexal mass; she is hemodynamically stable. Best next step?",
+    options: [
+      "Reassure and repeat scan in 4 weeks",
+      "Confirm ectopic (serial β-hCG, TVUS) and treat with methotrexate or surgery",
+      "Start oral contraceptives",
+      "Immediate hysterectomy"
+    ],
+    answer: 1,
+    exp: "Positive pregnancy test with an empty uterus and adnexal mass indicates ectopic pregnancy. A stable, unruptured, small ectopic with low β-hCG may be treated medically with methotrexate; unstable or ruptured needs surgery.",
+    expAr: "اختبار حمل إيجابي مع رحم فارغ وكتلة ملحقية يدل على حمل هاجر (خارج الرحم). الحمل الهاجر الصغير غير المنفجر مع β-hCG منخفض عند مريضة مستقرة يُعالَج طبياً بالميثوتريكسات؛ أما المنفجر أو غير المستقر فيحتاج جراحة."
+  },
+  {
+    topic: "OB-GYN",
+    q: "During labor the fetal heart tracing shows recurrent late decelerations with loss of variability. What do late decelerations indicate?",
+    options: [
+      "Head compression",
+      "Uteroplacental insufficiency / fetal hypoxia",
+      "Cord compression",
+      "Normal fetal sleep cycle"
+    ],
+    answer: 1,
+    exp: "Late decelerations (nadir after the contraction peak) reflect uteroplacental insufficiency and fetal hypoxia. Management: reposition, O2, IV fluids, stop oxytocin, and expedite delivery if it persists. (Variable = cord compression; early = head compression.)",
+    expAr: "التباطؤات المتأخرة (أخفض نقطة بعد ذروة التقلص) تعكس قصور المشيمة الرحمية ونقص أكسجة الجنين. التدبير: تغيير الوضعية، أكسجين، سوائل وريدية، إيقاف الأوكسيتوسين، وتسريع الولادة إن استمرت. (المتغيرة = ضغط الحبل؛ المبكرة = ضغط الرأس.)"
+  },
+  {
+    topic: "OB-GYN",
+    q: "At what interval is routine cervical cytology (Pap) generally recommended for average-risk women aged 21–29?",
+    options: [
+      "Every year",
+      "Every 3 years",
+      "Every 10 years",
+      "Only once at age 25"
+    ],
+    answer: 1,
+    exp: "For average-risk women 21–29, cytology every 3 years is recommended. From 30–65, options include cytology every 3 years, HPV testing every 5 years, or co-testing every 5 years.",
+    expAr: "للنساء ذوات الخطر المتوسط بعمر 21-29، يُوصى بفحص الخلايا (Pap) كل 3 سنوات. ومن 30-65 تشمل الخيارات: خلايا كل 3 سنوات، أو فحص HPV كل 5 سنوات، أو الفحص المشترك كل 5 سنوات."
+  },
+  {
+    topic: "OB-GYN",
+    q: "Which is a recognized risk factor for breast cancer?",
+    options: [
+      "Late age at menarche",
+      "Late age at menopause",
+      "High parity (many births)",
+      "First full-term pregnancy before age 18"
+    ],
+    answer: 1,
+    exp: "Prolonged estrogen exposure raises breast cancer risk: early menarche and LATE menopause both increase risk. Early first full-term pregnancy and high parity are protective.",
+    expAr: "التعرض المطوّل للإستروجين يرفع خطر سرطان الثدي: البلوغ المبكر وسن اليأس المتأخر كلاهما يزيد الخطر. أما الحمل المكتمل المبكر وتعدد الولادات فهما وقائيان."
+  },
+
+  // ---------------- PSYCHIATRY ----------------
+  {
+    topic: "Psychiatry",
+    q: "A 22-year-old man started on a high-potency antipsychotic develops fever 40°C, 'lead-pipe' rigidity, altered mental status, autonomic instability, and markedly elevated creatine kinase. Diagnosis and first step?",
+    options: [
+      "Neuroleptic malignant syndrome; stop the antipsychotic and give supportive care (± dantrolene/bromocriptine)",
+      "Serotonin syndrome; add an SSRI",
+      "Malignant hyperthermia; continue the drug",
+      "Simple febrile reaction; give more antipsychotic"
+    ],
+    answer: 0,
+    exp: "NMS = hyperthermia, lead-pipe rigidity, autonomic instability, altered mentation, and high CK after dopamine antagonists. Immediately stop the offending drug and provide aggressive supportive care; dantrolene or bromocriptine in severe cases.",
+    expAr: "المتلازمة الخبيثة للذهانات (NMS) = ارتفاع حرارة، صمل أنبوبي، عدم استقرار ذاتي، اضطراب وعي، وارتفاع CK بعد مضادات الدوبامين. أوقف الدواء المسبب فوراً وقدّم دعماً مكثفاً؛ ودانترولين أو بروموكريبتين في الحالات الشديدة."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A major depressive episode requires depressed mood or anhedonia plus associated symptoms for at least how long?",
+    options: [
+      "At least 2 weeks",
+      "At least 3 days",
+      "At least 2 months",
+      "At least 6 months"
+    ],
+    answer: 0,
+    exp: "A major depressive episode requires ≥5 symptoms (including depressed mood or anhedonia) present most of the day, nearly every day, for at least 2 weeks, causing functional impairment.",
+    expAr: "نوبة الاكتئاب الجسيم تتطلب ≥5 أعراض (تشمل المزاج المكتئب أو فقدان المتعة) معظم اليوم وكل يوم تقريباً لمدة أسبوعين على الأقل، مع تأثير على الأداء الوظيفي."
+  },
+  {
+    topic: "Psychiatry",
+    q: "Under the Israeli Treatment of Mentally Ill Persons Law, who is authorized to issue a compulsory (involuntary) psychiatric hospitalization order when a patient poses an immediate danger due to mental illness?",
+    options: [
+      "The District Psychiatrist (פסיכיאטר מחוזי)",
+      "Any general practitioner",
+      "A police officer alone",
+      "The patient's family"
+    ],
+    answer: 0,
+    exp: "Under the Treatment of Mentally Ill Persons Law (1991), the District Psychiatrist has the statutory authority to order compulsory examination/hospitalization when mental illness causes immediate danger to the patient or others.",
+    expAr: "بموجب قانون علاج المرضى النفسيين الإسرائيلي (1991)، يملك الطبيب النفسي اللوائي (פסיכיאטר מחוזי) السلطة القانونية لإصدار أمر الفحص/الإدخال الإجباري عندما يشكّل المرض النفسي خطراً مباشراً على المريض أو الآخرين."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A patient on an SSRI is also given tramadol and linezolid, then develops agitation, hyperthermia, tremor, hyperreflexia, and clonus (worse in the legs). Most likely diagnosis?",
+    options: [
+      "Serotonin syndrome",
+      "Neuroleptic malignant syndrome",
+      "Anticholinergic toxicity",
+      "Alcohol withdrawal"
+    ],
+    answer: 0,
+    exp: "Serotonin syndrome features neuromuscular hyperactivity (clonus, hyperreflexia—lower limbs prominent), autonomic instability, and altered mentation, with rapid onset after adding serotonergic drugs. Stop the agents and give supportive care ± cyproheptadine.",
+    expAr: "متلازمة السيروتونين تتميز بفرط نشاط عصبي عضلي (رمع، فرط منعكسات—أوضح في الطرفين السفليين) وعدم استقرار ذاتي واضطراب وعي، وبداية سريعة بعد إضافة أدوية سيروتونينية. أوقف الأدوية وقدّم دعماً ± سيبروهيبتادين."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A 19-year-old has had 8 months of auditory hallucinations, delusions, disorganized speech, and social withdrawal, with functional decline. Most likely diagnosis?",
+    options: [
+      "Schizophrenia",
+      "Brief psychotic disorder",
+      "Schizophreniform disorder",
+      "Major depression"
+    ],
+    answer: 0,
+    exp: "Continuous signs for ≥6 months with ≥1 month of active psychotic symptoms and functional decline meet criteria for schizophrenia. Brief psychotic disorder is <1 month; schizophreniform is 1–6 months.",
+    expAr: "استمرار الأعراض ≥6 أشهر مع ≥شهر من الأعراض الذهانية الفعّالة وتدهور وظيفي يحقق معايير الفصام. الاضطراب الذهاني الوجيز أقل من شهر، والشكل الفصامي 1-6 أشهر."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 55-year-old with type 2 diabetes and established atherosclerotic cardiovascular disease. Beyond metformin, which class has proven cardiovascular mortality benefit and is preferred next?",
+    options: ["Sulfonylurea", "SGLT2 inhibitor or GLP-1 receptor agonist", "DPP-4 inhibitor", "Basal insulin"],
+    answer: 1,
+    exp: "In T2DM with established ASCVD, GLP-1 receptor agonists and SGLT2 inhibitors reduce major cardiovascular events and mortality and are preferred add-ons regardless of A1c. SGLT2i also help in heart failure and CKD.",
+    expAr: "في السكري النوع الثاني مع تصلب شرايين قلبي وعائي مثبت، ناهضات GLP-1 ومثبطات SGLT2 تقلل الأحداث القلبية الكبرى والوفيات وتُفضّل كإضافة بغض النظر عن الخضاب السكري. مثبطات SGLT2 تفيد أيضاً في قصور القلب والكلى."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 45-year-old woman: fatigue, cold intolerance, weight gain, constipation. TSH is high, free T4 low. Most appropriate treatment?",
+    options: ["Levothyroxine (T4)", "Methimazole", "Radioactive iodine", "Liothyronine (T3) alone"],
+    answer: 0,
+    exp: "Primary hypothyroidism (high TSH, low free T4) is treated with oral levothyroxine, titrated to normalize TSH. Start lower/slower in elderly or cardiac patients.",
+    expAr: "قصور الدرقية الأولي (TSH مرتفع، T4 حر منخفض) يُعالَج بالليفوثيروكسين الفموي المعاير لتطبيع TSH. يُبدأ بجرعة أقل وأبطأ عند المسنين أو مرضى القلب."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 30-year-old woman: recurrent venous and arterial thromboses and two miscarriages; labs show prolonged aPTT that does not correct with mixing, plus anticardiolipin antibodies. Diagnosis?",
+    options: ["Antiphospholipid syndrome", "Factor V Leiden", "Protein C deficiency", "Disseminated intravascular coagulation"],
+    answer: 0,
+    exp: "Recurrent thrombosis and pregnancy loss with a lupus anticoagulant (aPTT not correcting on mixing) and antiphospholipid antibodies define antiphospholipid syndrome. Long-term anticoagulation (warfarin) is used after thrombosis.",
+    expAr: "الخثار المتكرر وفقدان الحمل مع مضاد تخثر الذئبة (aPTT لا يُصحّح بالمزج) وأضداد الفوسفوليبيد تُعرّف متلازمة أضداد الفوسفوليبيد. يُستخدم التخثير المديد (وارفارين) بعد الخثار."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 65-year-old man with back pain, anemia, hypercalcemia, and renal insufficiency; serum protein electrophoresis shows a monoclonal spike. Most likely diagnosis?",
+    options: ["Multiple myeloma", "Chronic lymphocytic leukemia", "Waldenström macroglobulinemia", "Metastatic prostate cancer"],
+    answer: 0,
+    exp: "CRAB features (hyperCalcemia, Renal failure, Anemia, Bone lesions) with a monoclonal (M) protein spike indicate multiple myeloma. Confirm with marrow plasma cells and free light chains.",
+    expAr: "ملامح CRAB (فرط كالسيوم، فشل كلوي، فقر دم، آفات عظمية) مع ذروة بروتين وحيد النسيلة تشير إلى الورم النقوي المتعدد. يُؤكَّد بخلايا بلازمية في النقي والسلاسل الخفيفة الحرة."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 40-year-old with episodic headache, palpitations, sweating, and paroxysmal hypertension. Best initial screening test for pheochromocytoma?",
+    options: ["Plasma free metanephrines (or 24-h urinary metanephrines)", "Serum cortisol", "Renal artery Doppler", "Aldosterone-to-renin ratio"],
+    answer: 0,
+    exp: "The classic triad (headache, palpitations, diaphoresis) with paroxysmal hypertension suggests pheochromocytoma; plasma free metanephrines or 24-h urinary metanephrines are the screening tests. Alpha-blockade precedes beta-blockade before surgery.",
+    expAr: "الثالوث الكلاسيكي (صداع، خفقان، تعرّق) مع ارتفاع ضغط نوبي يوحي بورم القواتم؛ الميتانفرين الحر في البلازما أو ميتانفرين البول 24 ساعة هما فحص الكشف. يسبق حصار ألفا حصار بيتا قبل الجراحة."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 28-year-old woman with a malar rash, arthritis, oral ulcers, proteinuria, and positive ANA and anti-dsDNA. Which antibody is most specific for this disease?",
+    options: ["Anti-dsDNA (and anti-Smith)", "Rheumatoid factor", "Anti-CCP", "Anti-centromere"],
+    answer: 0,
+    exp: "SLE. Anti-dsDNA (correlates with nephritis) and anti-Smith are the most specific antibodies. ANA is sensitive but not specific.",
+    expAr: "الذئبة الحمامية. أضداد dsDNA (المرتبطة بالتهاب الكلية) وأضداد Smith هي الأكثر نوعية. أما ANA فحساس لكنه غير نوعي."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 50-year-old man with chronic hepatitis C now has a new 4 cm liver mass with alpha-fetoprotein markedly elevated. Most likely diagnosis?",
+    options: ["Hepatocellular carcinoma", "Hemangioma", "Focal nodular hyperplasia", "Hepatic abscess"],
+    answer: 0,
+    exp: "Cirrhosis/chronic HCV with a new arterially-enhancing mass and elevated AFP is hepatocellular carcinoma. Screening is by ultrasound (± AFP) every 6 months in cirrhosis.",
+    expAr: "تشمع/التهاب كبد C مزمن مع كتلة جديدة معزَّزة شريانياً وارتفاع AFP = سرطان الخلايا الكبدية. المسح بالتصوير فوق الصوتي (± AFP) كل 6 أشهر في التشمع."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 60-year-old man with COPD develops acute worsening dyspnea; ABG shows pH 7.30, PaCO2 65, and he is drowsy but rousable with no contraindications. Best next step?",
+    options: ["Non-invasive positive pressure ventilation (BiPAP)", "Immediate intubation", "High-flow 100% oxygen only", "IV sodium bicarbonate"],
+    answer: 0,
+    exp: "Acute hypercapnic respiratory failure in a COPD exacerbation (respiratory acidosis) is first managed with non-invasive ventilation (BiPAP), which reduces intubation and mortality. Intubate if NIV fails or the patient cannot protect the airway.",
+    expAr: "الفشل التنفسي فرط ثنائي أكسيد الكربون الحاد في تفاقم COPD (حماض تنفسي) يُدار أولاً بالتهوية غير الباضعة (BiPAP) التي تقلل التنبيب والوفيات. يُنبَّب إذا فشلت أو تعذّر حماية المجرى الهوائي."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 35-year-old woman with fatigue, weakness, hyperpigmentation, hypotension, hyponatremia, and hyperkalemia. Diagnosis and confirmatory test?",
+    options: ["Primary adrenal insufficiency (Addison); ACTH stimulation test", "Cushing syndrome; dexamethasone suppression", "Hypothyroidism; TSH", "Diabetes insipidus; water deprivation test"],
+    answer: 0,
+    exp: "Hyperpigmentation with hyponatremia, hyperkalemia, and hypotension indicates primary adrenal insufficiency (Addison). The ACTH (cosyntropin) stimulation test confirms it; treat with glucocorticoid + mineralocorticoid replacement.",
+    expAr: "فرط التصبغ مع نقص صوديوم وفرط بوتاسيوم وهبوط ضغط يشير إلى قصور الكظر الأولي (أديسون). اختبار تحفيز ACTH يؤكده؛ يُعالَج بتعويض القشراني السكري والمعدني."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 70-year-old man with new atrial fibrillation, CHA2DS2-VASc score of 4. Best long-term stroke prevention?",
+    options: ["Oral anticoagulation (a DOAC preferred over warfarin)", "Aspirin alone", "No therapy", "Dual antiplatelet therapy"],
+    answer: 0,
+    exp: "AF with CHA2DS2-VASc ≥2 (men) warrants oral anticoagulation; DOACs are preferred over warfarin (except mechanical valves/moderate-severe mitral stenosis). Aspirin is inadequate for stroke prevention in AF.",
+    expAr: "الرجفان الأذيني مع CHA2DS2-VASc ≥2 (للرجال) يستدعي مضاد تخثر فموي؛ وتُفضّل مضادات التخثر المباشرة (DOAC) على الوارفارين (عدا الصمامات الميكانيكية/تضيّق التاجي المتوسط-الشديد). الأسبرين غير كافٍ للوقاية من السكتة."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A young woman with hyperthyroidism, diffuse goiter, and exophthalmos; TSH low, T4 high, and TSH-receptor antibodies positive. Diagnosis?",
+    options: ["Graves disease", "Toxic multinodular goiter", "Subacute thyroiditis", "Thyroid cancer"],
+    answer: 0,
+    exp: "Diffuse goiter with orbitopathy and TSH-receptor (TSI) antibodies is Graves disease (autoimmune). Treat with thionamides, radioactive iodine, or surgery.",
+    expAr: "دراق منتشر مع اعتلال حجاجي وأضداد مستقبل TSH = داء غريفز (مناعي ذاتي). يُعالَج بالثيوناميدات أو اليود المشع أو الجراحة."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 55-year-old man with sudden severe monoarthritis of the first MTP joint; joint aspirate shows negatively birefringent needle-shaped crystals. Best acute treatment?",
+    options: ["NSAIDs, colchicine, or corticosteroids", "Allopurinol started immediately at high dose", "Broad-spectrum IV antibiotics", "Methotrexate"],
+    answer: 0,
+    exp: "Acute gout (negatively birefringent monosodium urate crystals) is treated with NSAIDs, colchicine, or steroids. Do NOT start or stop urate-lowering therapy during an acute flare; begin allopurinol later with prophylaxis.",
+    expAr: "النقرس الحاد (بلورات يورات أحادية الصوديوم سلبية الانكسار) يُعالَج بمضادات الالتهاب اللاستيرويدية أو الكولشيسين أو الستيرويدات. لا يُبدأ أو يُوقف خافض اليورات أثناء الهجمة؛ يُبدأ الألوبيورينول لاحقاً مع وقاية."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 62-year-old smoker with hyponatremia (Na 118), normal volume status, low serum osmolality, high urine osmolality and urine sodium, and a lung mass. Mechanism?",
+    options: ["SIADH (often small-cell lung cancer)", "Diabetes insipidus", "Primary hyperaldosteronism", "Cushing disease"],
+    answer: 0,
+    exp: "Euvolemic hyponatremia with concentrated urine and elevated urine sodium is SIADH; small-cell lung cancer is a classic cause. Treat with fluid restriction (± tolvaptan) and correct Na slowly to avoid osmotic demyelination.",
+    expAr: "نقص صوديوم سوي الحجم مع بول مركّز وصوديوم بولي مرتفع = SIADH؛ وسرطان الرئة صغير الخلايا سبب كلاسيكي. يُعالَج بتقييد السوائل (± تولفابتان) وتصحيح الصوديوم ببطء لتجنب إزالة النخاعين التناضحية."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 24-year-old presents with polyuria, polydipsia, Kussmaul breathing, glucose 480, pH 7.10, ketones positive. First priority in management?",
+    options: ["IV isotonic fluids (then insulin and potassium repletion)", "IV sodium bicarbonate", "Oral hypoglycemics", "Immediate IV insulin bolus before fluids"],
+    answer: 0,
+    exp: "In DKA, the first priority is aggressive IV isotonic fluid resuscitation, followed by insulin infusion and careful potassium replacement (hold insulin if K <3.3). Bicarbonate is only for severe acidosis (pH <6.9).",
+    expAr: "في الحماض الكيتوني السكري، الأولوية الأولى هي إنعاش وريدي مكثف بسوائل متساوية التوتر، ثم تسريب الإنسولين وتعويض البوتاسيوم بحذر (يُؤجَّل الإنسولين إذا K<3.3). البيكربونات فقط للحماض الشديد (pH<6.9)."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 68-year-old with progressive dyspnea, elevated JVP, bilateral crackles, S3 gallop, and BNP markedly elevated; echo shows LVEF 30%. Which drug reduces mortality in HFrEF?",
+    options: ["Beta-blocker (carvedilol/bisoprolol/metoprolol succinate)", "Digoxin", "Furosemide", "Amlodipine"],
+    answer: 0,
+    exp: "Evidence-based beta-blockers reduce mortality in HFrEF (one of the four pillars). Diuretics relieve symptoms but do not reduce mortality; digoxin reduces hospitalizations only.",
+    expAr: "حاصرات بيتا المثبتة تقلل الوفيات في HFrEF (إحدى الركائز الأربع). المدرات تخفف الأعراض دون تقليل الوفيات، والديجوكسين يقلل الاستشفاء فقط."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 45-year-old with epigastric pain relieved by food and nocturnal awakening; H. pylori stool antigen positive. Best treatment?",
+    options: ["Triple/quadruple therapy: PPI + clarithromycin + amoxicillin (± bismuth/metronidazole)", "PPI alone indefinitely", "Antacids as needed only", "Surgery (vagotomy)"],
+    answer: 0,
+    exp: "H. pylori-associated duodenal ulcer is treated with eradication therapy (PPI + two antibiotics, e.g., clarithromycin + amoxicillin, or bismuth quadruple therapy in high-resistance areas). Confirm eradication after treatment.",
+    expAr: "قرحة الاثني عشر المرتبطة بالملوية البوابية تُعالَج باستئصال الجرثومة (PPI + مضادين حيويين مثل كلاريثرومايسين + أموكسيسيلين، أو العلاج الرباعي بالبزموت في مناطق المقاومة العالية). يُؤكَّد الاستئصال بعد العلاج."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 30-year-old man with recurrent large-joint arthritis, low back pain and stiffness improving with exercise, and X-ray sacroiliitis; HLA-B27 positive. Diagnosis?",
+    options: ["Ankylosing spondylitis", "Rheumatoid arthritis", "Osteoarthritis", "Gout"],
+    answer: 0,
+    exp: "Inflammatory back pain (worse with rest, better with activity) plus sacroiliitis and HLA-B27 positivity indicates ankylosing spondylitis. First-line: NSAIDs and exercise; TNF/IL-17 inhibitors if refractory.",
+    expAr: "ألم الظهر الالتهابي (يسوء بالراحة ويتحسن بالنشاط) مع التهاب المفصل العجزي الحرقفي وإيجابية HLA-B27 = التهاب الفقار اللاصق. الخط الأول: مضادات الالتهاب اللاستيرويدية والتمارين؛ ومثبطات TNF/IL-17 عند عدم الاستجابة."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 55-year-old woman with fatigue, pruritus, xanthelasma, and cholestatic LFTs; anti-mitochondrial antibody positive. Diagnosis and first-line therapy?",
+    options: ["Primary biliary cholangitis; ursodeoxycholic acid", "Primary sclerosing cholangitis; ERCP stenting", "Autoimmune hepatitis; prednisone", "Hemochromatosis; phlebotomy"],
+    answer: 0,
+    exp: "Cholestatic picture with positive anti-mitochondrial antibody in a middle-aged woman is primary biliary cholangitis. Ursodeoxycholic acid is first-line and slows progression.",
+    expAr: "صورة ركودية صفراوية مع أضداد الميتوكوندريا الإيجابية عند امرأة متوسطة العمر = التهاب الأقنية الصفراوية الأولي. حمض أورسوديوكسيكوليك هو الخط الأول ويبطئ التقدم."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 20-year-old man of Mediterranean descent with mild microcytic anemia, normal iron, and elevated HbA2 on electrophoresis. Diagnosis?",
+    options: ["Beta-thalassemia minor (trait)", "Iron deficiency anemia", "Sideroblastic anemia", "Anemia of chronic disease"],
+    answer: 0,
+    exp: "Microcytosis with normal iron studies and elevated HbA2 indicates beta-thalassemia trait. No iron therapy is needed; genetic counseling is appropriate.",
+    expAr: "صغر الكريات مع دراسات حديد طبيعية وارتفاع HbA2 = سمة الثلاسيميا بيتا. لا حاجة للحديد؛ ويُنصح بالاستشارة الوراثية."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 66-year-old man with resistant hypertension, hypokalemia, and metabolic alkalosis; aldosterone high, renin suppressed. Diagnosis?",
+    options: ["Primary hyperaldosteronism (Conn syndrome)", "Renal artery stenosis", "Pheochromocytoma", "Cushing syndrome"],
+    answer: 0,
+    exp: "High aldosterone with suppressed renin (high aldosterone/renin ratio), hypertension, and hypokalemia is primary hyperaldosteronism. Evaluate for adenoma vs bilateral hyperplasia; treat with adrenalectomy or an MRA (spironolactone/eplerenone).",
+    expAr: "ارتفاع الألدوستيرون مع كبت الرينين (نسبة ألدوستيرون/رينين مرتفعة) مع ارتفاع ضغط ونقص بوتاسيوم = فرط الألدوستيرونية الأولي (كون). يُقيّم الورم الغدي مقابل فرط التنسج الثنائي؛ ويُعالَج بالاستئصال أو مضاد الألدوستيرون."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 72-year-old with temporal headache, jaw claudication, scalp tenderness, and ESR 90; vision threatened. Best immediate action?",
+    options: ["Start high-dose corticosteroids immediately, then temporal artery biopsy", "Wait for biopsy before any treatment", "Order MRI brain first", "Start low-dose aspirin only"],
+    answer: 0,
+    exp: "Giant cell (temporal) arteritis threatens vision. Start high-dose glucocorticoids immediately without waiting for biopsy to prevent irreversible blindness; biopsy can still be positive for ~2 weeks after starting steroids.",
+    expAr: "التهاب الشرايين ذو الخلايا العملاقة (الصدغي) يهدد البصر. ابدأ الستيرويدات عالية الجرعة فوراً دون انتظار الخزعة لمنع العمى الدائم؛ تبقى الخزعة إيجابية لنحو أسبوعين بعد بدء الستيرويد."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 50-year-old with watery diarrhea, flushing, and right-sided heart valve disease; elevated 24-h urinary 5-HIAA. Diagnosis?",
+    options: ["Carcinoid syndrome", "VIPoma", "Zollinger-Ellison syndrome", "Medullary thyroid cancer"],
+    answer: 0,
+    exp: "Flushing, diarrhea, and right-heart valvular disease with elevated urinary 5-HIAA indicate carcinoid syndrome from a serotonin-secreting neuroendocrine tumor (usually with liver metastases). Somatostatin analogues (octreotide) control symptoms.",
+    expAr: "التورّد والإسهال وإصابة صمامات القلب الأيمن مع ارتفاع 5-HIAA البولي = المتلازمة السرطاوية من ورم صمّاوي عصبي مفرز للسيروتونين (غالباً مع نقائل كبدية). نظائر السوماتوستاتين (أوكتريوتيد) تضبط الأعراض."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 40-year-old woman with dry eyes and dry mouth, bilateral parotid enlargement, and positive anti-Ro/SSA and anti-La/SSB. Diagnosis?",
+    options: ["Sjögren syndrome", "Sarcoidosis", "Systemic sclerosis", "Rheumatoid arthritis"],
+    answer: 0,
+    exp: "Keratoconjunctivitis sicca and xerostomia with anti-Ro/SSA and anti-La/SSB antibodies define Sjögren syndrome. There is increased risk of non-Hodgkin (MALT) lymphoma.",
+    expAr: "جفاف العين والفم مع أضداد Ro/SSA وLa/SSB = متلازمة شوغرن. يزداد خطر لمفوما اللاهودجكن (MALT)."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 60-year-old with diabetes develops acute flank pain, fever, pyuria, and gas in the renal parenchyma on CT. Diagnosis and management?",
+    options: ["Emphysematous pyelonephritis; IV antibiotics + drainage, sometimes nephrectomy", "Simple cystitis; oral nitrofurantoin", "Renal cell carcinoma; observation", "Renal colic; hydration only"],
+    answer: 0,
+    exp: "Gas within the renal parenchyma in a diabetic with severe infection is emphysematous pyelonephritis, a urologic emergency needing IV antibiotics and drainage; nephrectomy for severe/non-responding cases.",
+    expAr: "وجود غاز داخل نسيج الكلية عند سكري مع عدوى شديدة = التهاب الحويضة والكلية الانتفاخي، طارئ بولي يحتاج مضادات وريدية وتفجيراً؛ واستئصال الكلية في الحالات الشديدة غير المستجيبة."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A patient with heart failure on an ACE inhibitor and spironolactone develops peaked T waves and a widened QRS. Immediate treatment for the underlying disturbance?",
+    options: ["IV calcium gluconate (then insulin/glucose, etc.)", "IV normal saline bolus only", "Oral potassium", "IV magnesium"],
+    answer: 0,
+    exp: "Peaked T waves and widened QRS indicate hyperkalemia with cardiac toxicity. Give IV calcium (gluconate/chloride) first to stabilize the myocardium, then shift potassium (insulin+glucose, beta-agonist) and remove it (diuretics, dialysis, binders).",
+    expAr: "موجات T مدببة وتوسّع QRS تدل على فرط بوتاسيوم مع سمية قلبية. أعطِ الكالسيوم الوريدي أولاً لتثبيت عضلة القلب، ثم انقل البوتاسيوم (إنسولين+غلوكوز، ناهض بيتا) وأزِله (مدرات، غسيل، رابطات)."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 35-year-old woman with palpitations, weight loss, and a tender thyroid after a viral illness; low TSH, high T4, and low radioactive iodine uptake. Diagnosis?",
+    options: ["Subacute (de Quervain) thyroiditis", "Graves disease", "Toxic adenoma", "Factitious thyrotoxicosis"],
+    answer: 0,
+    exp: "A painful/tender thyroid post-viral with thyrotoxicosis and LOW radioiodine uptake is subacute (de Quervain) thyroiditis. It is self-limited; treat with NSAIDs (± steroids) and beta-blockers for symptoms.",
+    expAr: "درقية مؤلمة بعد عدوى فيروسية مع فرط نشاط وانخفاض قبط اليود المشع = التهاب الدرق تحت الحاد (دي كيرفان). محدود ذاتياً؛ يُعالَج بمضادات الالتهاب (± ستيرويد) وحاصرات بيتا للأعراض."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 55-year-old man with recurrent peptic ulcers in unusual locations, diarrhea, and high fasting serum gastrin. Diagnosis?",
+    options: ["Zollinger-Ellison syndrome (gastrinoma)", "Chronic pancreatitis", "Celiac disease", "Crohn disease"],
+    answer: 0,
+    exp: "Multiple/refractory ulcers, diarrhea, and markedly elevated gastrin suggest a gastrinoma (Zollinger-Ellison), which may be part of MEN1. High-dose PPIs control acid; localize and resect the tumor.",
+    expAr: "قرحات متعددة/عنيدة وإسهال وارتفاع كبير في الغاسترين يوحي بورم غاستريني (زولينجر-إليسون)، وقد يكون جزءاً من MEN1. جرعات عالية من PPI تضبط الحمض؛ ويُحدَّد الورم ويُستأصل."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 70-year-old with fatigue, lymphocytosis (WBC 40,000, mostly mature lymphocytes), and smudge cells on smear. Most likely diagnosis?",
+    options: ["Chronic lymphocytic leukemia", "Acute myeloid leukemia", "Hairy cell leukemia", "Reactive lymphocytosis"],
+    answer: 0,
+    exp: "Older adult with marked mature lymphocytosis and smudge cells is CLL; flow cytometry confirms a clonal CD5+/CD23+ B-cell population. Often observed if asymptomatic.",
+    expAr: "بالغ مسن مع كثرة لمفاويات ناضجة وخلايا ملطخة (smudge) = ابيضاض لمفاوي مزمن (CLL)؛ يؤكده قياس التدفق الخلوي بظهور نسيلة CD5+/CD23+. يُراقَب غالباً إن كان لاعرضياً."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 45-year-old man with hypertension, hematuria, bilateral flank masses, and a family history of intracranial aneurysm. Diagnosis?",
+    options: ["Autosomal dominant polycystic kidney disease", "Medullary sponge kidney", "Renal cell carcinoma", "Simple renal cysts"],
+    answer: 0,
+    exp: "Bilateral enlarged cystic kidneys, hypertension, hematuria, and associated berry aneurysms indicate ADPKD. Manage BP (ACEi/ARB); tolvaptan can slow progression in selected patients.",
+    expAr: "كليتان متضخمتان كيسيتان مع ارتفاع ضغط وبيلة دموية وأمهات دم دماغية = مرض الكلى متعدد الكيسات السائد. تُضبط الضغط (ACEi/ARB)، وقد يبطئ التولفابتان التقدم في مرضى مختارين."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 30-year-old woman with fatigue, jaundice, elevated transaminases, positive anti-smooth-muscle antibody, and high IgG; biopsy shows interface hepatitis. Diagnosis and treatment?",
+    options: ["Autoimmune hepatitis; corticosteroids ± azathioprine", "Hepatitis A; supportive care", "Wilson disease; chelation", "NAFLD; weight loss"],
+    answer: 0,
+    exp: "Interface hepatitis with anti-smooth-muscle antibody and elevated IgG is autoimmune hepatitis. First-line therapy is corticosteroids, often with azathioprine as a steroid-sparing agent.",
+    expAr: "التهاب كبد بيني مع أضداد العضلات الملساء وارتفاع IgG = التهاب الكبد المناعي الذاتي. الخط الأول ستيرويدات، وغالباً مع آزاثيوبرين لتقليل الستيرويد."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 60-year-old presents with sudden painless monocular vision loss; fundus shows a pale retina with a cherry-red spot. Diagnosis?",
+    options: ["Central retinal artery occlusion", "Central retinal vein occlusion", "Retinal detachment", "Optic neuritis"],
+    answer: 0,
+    exp: "Sudden painless vision loss with a cherry-red spot and pale retina is central retinal artery occlusion—an ocular emergency (a stroke of the eye). Evaluate for carotid/cardiac embolic source and giant cell arteritis.",
+    expAr: "فقدان بصر مفاجئ غير مؤلم مع بقعة حمراء كرزية وشبكية شاحبة = انسداد الشريان الشبكي المركزي—طارئ عيني (سكتة العين). يُقيّم مصدر صمي سباتي/قلبي والتهاب الشرايين العملاقة."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 25-year-old with recurrent oral and genital ulcers, uveitis, and pathergy; more common in patients from the Mediterranean/Silk Road. Diagnosis?",
+    options: ["Behçet disease", "Systemic lupus erythematosus", "Reactive arthritis", "Crohn disease"],
+    answer: 0,
+    exp: "Recurrent oral and genital ulcers with uveitis and a positive pathergy test define Behçet disease, a variable-vessel vasculitis common along the Silk Road/Mediterranean.",
+    expAr: "قرحات فموية وتناسلية متكررة مع التهاب عنبية واختبار باثرجي إيجابي = داء بهجت، التهاب أوعية متعدد الأحجام شائع على طول طريق الحرير/المتوسط."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A patient with a mechanical mitral valve needs long-term anticoagulation. Which agent is appropriate?",
+    options: ["Warfarin (a vitamin K antagonist)", "Dabigatran", "Apixaban", "Rivaroxaban"],
+    answer: 0,
+    exp: "Mechanical heart valves require warfarin; direct oral anticoagulants (e.g., dabigatran) are contraindicated because they increase thromboembolic and bleeding events in this setting.",
+    expAr: "الصمامات الميكانيكية تتطلب وارفارين؛ ومضادات التخثر الفموية المباشرة (مثل دابيغاتران) ممنوعة لأنها تزيد الأحداث الخثارية والنزفية في هذه الحالة."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 55-year-old with fatigue, arthralgia, bronze skin, diabetes, and elevated ferritin with high transferrin saturation. Diagnosis?",
+    options: ["Hereditary hemochromatosis", "Wilson disease", "Alpha-1 antitrypsin deficiency", "Porphyria cutanea tarda"],
+    answer: 0,
+    exp: "Iron overload (high ferritin and transferrin saturation) with diabetes, arthropathy, and skin pigmentation suggests hereditary hemochromatosis (HFE C282Y). Treat with therapeutic phlebotomy.",
+    expAr: "زيادة الحديد (ارتفاع الفيريتين وإشباع الترانسفيرين) مع سكري واعتلال مفاصل وتصبغ جلدي يوحي بداء ترسب الأصبغة الدموية الوراثي (HFE C282Y). العلاج بالفصد العلاجي."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A patient on long-term amiodarone should be routinely monitored for toxicity of which organs?",
+    options: ["Thyroid, liver, and lungs", "Kidneys and bladder", "Pancreas and spleen", "Bone marrow only"],
+    answer: 0,
+    exp: "Amiodarone can cause thyroid dysfunction (hypo- or hyperthyroidism), hepatotoxicity, and pulmonary fibrosis; also corneal deposits and skin discoloration. Monitor TFTs, LFTs, and pulmonary function/CXR.",
+    expAr: "الأميودارون قد يسبب خللاً درقياً (قصور أو فرط)، سمية كبدية، وتليفاً رئوياً؛ وأيضاً رواسب قرنية وتلون الجلد. تُراقَب وظائف الدرق والكبد والرئة/صورة الصدر."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 65-year-old man with progressive exertional dyspnea, a harsh crescendo-decrescendo systolic murmur at the right upper sternal border radiating to the carotids, and syncope. Diagnosis?",
+    options: ["Aortic stenosis", "Mitral regurgitation", "Aortic regurgitation", "Hypertrophic cardiomyopathy"],
+    answer: 0,
+    exp: "Exertional dyspnea, angina, and syncope with a crescendo-decrescendo systolic ejection murmur radiating to the carotids indicate severe aortic stenosis. Definitive treatment is valve replacement (SAVR/TAVR).",
+    expAr: "زلة جهدية وذبحة وإغماء مع لغط انقباضي متزايد-متناقص ينتشر للسباتيين = تضيّق أبهري شديد. العلاج النهائي استبدال الصمام (جراحي أو عبر القسطرة)."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A previously healthy adult develops watery diarrhea, fever, and abdominal pain after recent antibiotics; stool tests positive for C. difficile toxin. First-line treatment?",
+    options: ["Oral vancomycin or fidaxomicin", "IV metronidazole alone as first choice", "Loperamide", "Ciprofloxacin"],
+    answer: 0,
+    exp: "For C. difficile infection, oral vancomycin or fidaxomicin is now first-line (metronidazole is reserved for mild cases when the others are unavailable). Stop the inciting antibiotic and avoid antimotility agents.",
+    expAr: "لعدوى المطثية العسيرة، فانكومايسين الفموي أو فيداكسوميسين هما الخط الأول الآن (يُحفظ الميترونيدازول للحالات الخفيفة عند عدم توفرهما). يُوقَف المضاد المحرِّض وتُتجنَّب مضادات الحركة."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 40-year-old with acute severe epigastric pain radiating to the back, vomiting, and lipase 5× the upper limit; recent heavy alcohol use. Best initial management?",
+    options: ["Aggressive IV fluids, analgesia, and NPO/early enteral nutrition", "Immediate ERCP for all patients", "Prophylactic antibiotics for all", "Emergency laparotomy"],
+    answer: 0,
+    exp: "Acute pancreatitis is managed with aggressive IV fluid resuscitation, analgesia, and nutrition (early enteral feeding when tolerated). ERCP is only for concurrent cholangitis/biliary obstruction; antibiotics only for infected necrosis.",
+    expAr: "التهاب البنكرياس الحاد يُدار بإنعاش وريدي مكثف بالسوائل ومسكنات وتغذية (معوية مبكرة عند التحمّل). ERCP فقط مع التهاب أقنية/انسداد صفراوي مرافق؛ والمضادات فقط للنخر المتعفن."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A patient started on a statin develops diffuse muscle pain and weakness with markedly elevated creatine kinase and dark urine. Immediate step?",
+    options: ["Stop the statin and give IV fluids (rhabdomyolysis)", "Increase the statin dose", "Add a fibrate immediately", "Start dialysis regardless of renal function"],
+    answer: 0,
+    exp: "Statin-induced rhabdomyolysis (myalgia, weakness, very high CK, myoglobinuria) requires stopping the statin and aggressive IV hydration to prevent acute kidney injury. Avoid combining with agents that raise statin levels.",
+    expAr: "انحلال العضلات المحرَّض بالستاتين (ألم عضلي، ضعف، CK مرتفع جداً، بيلة ميوغلوبينية) يتطلب إيقاف الستاتين وإماهة وريدية مكثفة لمنع الأذية الكلوية الحادة. تُتجنَّب الأدوية التي ترفع مستوى الستاتين."
+  },
+  {
+    topic: "Surgery",
+    q: "A 55-year-old man with sudden severe diffuse abdominal pain, a rigid board-like abdomen, and free air under the diaphragm on upright chest X-ray. Most likely diagnosis?",
+    options: ["Perforated peptic ulcer", "Acute appendicitis", "Small-bowel obstruction", "Acute cholecystitis"],
+    answer: 0,
+    exp: "Sudden peritonitis with pneumoperitoneum (free air under the diaphragm) indicates a perforated viscus, classically a perforated peptic ulcer. Resuscitate, give antibiotics and PPI, and perform urgent surgery.",
+    expAr: "التهاب صفاق مفاجئ مع هواء حر تحت الحجاب = انثقاب حشوي، وكلاسيكياً قرحة هضمية منثقبة. يُنعَش المريض ويُعطى مضادات وPPI وتُجرى جراحة عاجلة."
+  },
+  {
+    topic: "Surgery",
+    q: "A trauma patient with class III hemorrhagic shock has lost approximately what percentage of blood volume?",
+    options: ["30–40%", "<15%", "15–30%", ">50% only"],
+    answer: 0,
+    exp: "ATLS class III hemorrhage = 30–40% blood loss (~1500–2000 mL) with tachycardia, hypotension, tachypnea, and decreased urine output/confusion. It usually requires blood products in addition to crystalloid.",
+    expAr: "النزف صنف III في ATLS = فقدان 30-40% من حجم الدم (نحو 1500-2000 مل) مع تسرّع قلب وهبوط ضغط وتسرّع تنفس ونقص إدرار/تشوّش. يتطلب عادةً منتجات دم إضافة للكريستالويد."
+  },
+  {
+    topic: "Surgery",
+    q: "Which principle is part of damage-control resuscitation in severe trauma?",
+    options: ["Early use of blood and blood products (balanced transfusion)", "Maintaining systolic BP above 110 mmHg", "Giving at least 2 L of crystalloid first", "Avoiding tranexamic acid"],
+    answer: 0,
+    exp: "Damage-control resuscitation uses permissive hypotension, minimal crystalloid, early balanced blood products (1:1:1), and tranexamic acid (within 3 h). Excessive crystalloid worsens coagulopathy and outcomes.",
+    expAr: "إنعاش السيطرة على الضرر يعتمد الهبوط المسموح للضغط، وتقليل الكريستالويد، والبدء المبكر بمنتجات الدم المتوازنة (1:1:1)، وحمض الترانيكساميك (خلال 3 ساعات). الإفراط بالكريستالويد يفاقم اعتلال التخثر والنتائج."
+  },
+  {
+    topic: "Surgery",
+    q: "A 68-year-old with painless obstructive jaundice, weight loss, and a palpable non-tender gallbladder (Courvoisier sign). Most likely diagnosis?",
+    options: ["Pancreatic head carcinoma", "Gallstone in the cystic duct", "Acute hepatitis", "Gilbert syndrome"],
+    answer: 0,
+    exp: "Courvoisier's sign (palpable non-tender gallbladder with painless jaundice) suggests malignant distal biliary obstruction, most often pancreatic head cancer. Evaluate with CT/MRCP and CA 19-9.",
+    expAr: "علامة كورفوازييه (مرارة مجسوسة غير مؤلمة مع يرقان غير مؤلم) توحي بانسداد صفراوي قاصٍ خبيث، غالباً سرطان رأس البنكرياس. يُقيّم بـCT/MRCP وCA 19-9."
+  },
+  {
+    topic: "Surgery",
+    q: "A 60-year-old presents with bright-red blood per rectum, change in bowel habits, iron-deficiency anemia, and weight loss. Most important next investigation?",
+    options: ["Colonoscopy", "Barium enema", "Abdominal ultrasound", "Stool softeners and reassurance"],
+    answer: 0,
+    exp: "New change in bowel habits, rectal bleeding, and iron-deficiency anemia in an older adult mandate colonoscopy to exclude colorectal cancer, allowing biopsy and localization.",
+    expAr: "تغيّر جديد في عادات التغوط ونزف شرجي وفقر دم بعوز الحديد عند مسن يستوجب تنظير القولون لاستبعاد سرطان القولون والمستقيم، مع إمكانية الخزعة والتحديد."
+  },
+  {
+    topic: "Surgery",
+    q: "A young man has severe pain and swelling of one testicle of sudden onset, a high-riding testis with absent cremasteric reflex. Best next step?",
+    options: ["Immediate surgical exploration (testicular torsion)", "Scrotal ultrasound before any intervention regardless of delay", "Oral antibiotics for epididymitis", "Elevation and NSAIDs only"],
+    answer: 0,
+    exp: "Testicular torsion is a surgical emergency; the testis is salvageable within ~6 hours. When clinical suspicion is high, proceed to immediate surgical exploration/detorsion—don't delay for imaging.",
+    expAr: "انفتال الخصية طارئ جراحي؛ الخصية قابلة للإنقاذ خلال نحو 6 ساعات. عند الاشتباه السريري العالي يُصار للاستكشاف الجراحي الفوري وإرجاع الالتفاف دون تأخير للتصوير."
+  },
+  {
+    topic: "Surgery",
+    q: "A patient sustains a deep burn to the entire circumference of the forearm; the hand becomes cold, pale, and pulseless. Immediate procedure?",
+    options: ["Escharotomy", "Fasciotomy of the thigh", "Immediate amputation", "Skin grafting"],
+    answer: 0,
+    exp: "A circumferential full-thickness burn can cause a compartment-like constriction with distal ischemia; urgent escharotomy relieves pressure and restores perfusion.",
+    expAr: "الحرق المحيطي كامل السماكة قد يسبب انضغاطاً شبيهاً بالحيّز مع إقفار قاصٍ؛ خزع القشرة العاجل (Escharotomy) يخفف الضغط ويعيد التروية."
+  },
+  {
+    topic: "Surgery",
+    q: "The Parkland formula is used to guide which aspect of burn management in the first 24 hours?",
+    options: ["Fluid resuscitation volume", "Antibiotic dosing", "Analgesia dosing", "Nutritional protein intake"],
+    answer: 0,
+    exp: "The Parkland formula (4 mL × %TBSA × weight in kg of lactated Ringer's, half in the first 8 hours) estimates fluid resuscitation for major burns, titrated to urine output.",
+    expAr: "معادلة باركلاند (4 مل × نسبة مساحة الجسم المحروقة × الوزن بالكغ من محلول رينغر، نصفها في أول 8 ساعات) تُقدّر إنعاش السوائل للحروق الكبيرة، وتُعاير حسب إدرار البول."
+  },
+  {
+    topic: "Surgery",
+    q: "A 30-year-old woman with a solitary, well-defined, mobile, non-tender 2 cm breast lump; ultrasound shows a solid oval mass with benign features. Most likely diagnosis?",
+    options: ["Fibroadenoma", "Invasive ductal carcinoma", "Breast cyst", "Fat necrosis"],
+    answer: 0,
+    exp: "A mobile, firm, well-circumscribed lump in a young woman is most likely a fibroadenoma. Confirm with imaging ± core biopsy; management is often observation or excision if enlarging/symptomatic.",
+    expAr: "كتلة متحركة قاسية جيدة الحدود عند امرأة شابة غالباً ورم غدي ليفي. يُؤكَّد بالتصوير ± خزعة إبرية؛ والتدبير غالباً مراقبة أو استئصال إن كبرت/تعرّضت."
+  },
+  {
+    topic: "Surgery",
+    q: "A 65-year-old smoker has a pulsatile abdominal mass; ultrasound shows an infrarenal aortic aneurysm measuring 4.2 cm and asymptomatic. Best management?",
+    options: ["Surveillance ultrasound and risk-factor modification", "Immediate open repair", "Immediate EVAR", "Start anticoagulation"],
+    answer: 0,
+    exp: "AAAs <5.5 cm that are asymptomatic and not rapidly growing are managed with surveillance (ultrasound) and cardiovascular risk reduction (smoking cessation, BP control). Repair is indicated at ≥5.5 cm, rapid growth, or symptoms.",
+    expAr: "أمهات الدم الأبهرية <5.5 سم اللاعرضية وغير سريعة النمو تُدار بالمراقبة (تصوير) وتقليل عوامل الخطر (إيقاف التدخين، ضبط الضغط). الإصلاح عند ≥5.5 سم أو النمو السريع أو الأعراض."
+  },
+  {
+    topic: "Surgery",
+    q: "A patient develops sudden severe abdominal pain out of proportion to exam findings, with atrial fibrillation and metabolic acidosis. Most likely diagnosis?",
+    options: ["Acute mesenteric ischemia", "Acute pancreatitis", "Diverticulitis", "Peptic ulcer disease"],
+    answer: 0,
+    exp: "Pain out of proportion to exam, especially with AF (embolic source) and lactic acidosis, is acute mesenteric ischemia—usually superior mesenteric artery embolism. CT angiography confirms; urgent revascularization/resection is needed.",
+    expAr: "ألم أشد من موجودات الفحص، خاصة مع رجفان أذيني (مصدر صمي) وحماض لبني = إقفار مساريقي حاد، غالباً صمة الشريان المساريقي العلوي. يؤكده تصوير الأوعية المقطعي؛ ويلزم إعادة تروية/استئصال عاجل."
+  },
+  {
+    topic: "Surgery",
+    q: "A patient with a lower-leg fracture develops severe pain worsened by passive stretch, tense swelling, and paresthesia; distal pulses are still present. Diagnosis and management?",
+    options: ["Acute compartment syndrome; emergent fasciotomy", "Deep vein thrombosis; anticoagulation", "Cellulitis; antibiotics", "Simple contusion; observation"],
+    answer: 0,
+    exp: "Compartment syndrome presents with pain out of proportion, pain on passive stretch, tense compartment, and paresthesia—pulses are often still present early. It is a surgical emergency treated with immediate fasciotomy.",
+    expAr: "متلازمة الحيّز تظهر بألم مفرط، وألم عند التمدد المنفعل، وحيّز متوتر، ومذل—وغالباً تبقى النبضات موجودة مبكراً. طارئ جراحي يُعالَج بخزع اللفافة الفوري."
+  },
+  {
+    topic: "Surgery",
+    q: "A 40-year-old has recurrent right-upper-quadrant pain, fever, and jaundice (Charcot's triad). Most likely diagnosis?",
+    options: ["Acute ascending cholangitis", "Acute cholecystitis", "Hepatitis", "Pancreatic pseudocyst"],
+    answer: 0,
+    exp: "Charcot's triad (RUQ pain, fever, jaundice) indicates acute cholangitis from biliary obstruction. Treat with IV antibiotics and urgent biliary drainage (ERCP). Reynolds pentad adds hypotension and confusion.",
+    expAr: "ثالوث شاركو (ألم مراق أيمن، حمى، يرقان) يدل على التهاب أقنية صفراوية حاد من انسداد صفراوي. يُعالَج بمضادات وريدية وتفجير صفراوي عاجل (ERCP). خماسي رينولدز يضيف هبوط الضغط والتشوّش."
+  },
+  {
+    topic: "Surgery",
+    q: "In a stable trauma patient, which imaging is the standard for evaluating intra-abdominal injury?",
+    options: ["CT of the abdomen and pelvis with IV contrast", "Plain abdominal X-ray", "MRI abdomen", "Diagnostic peritoneal lavage in all"],
+    answer: 0,
+    exp: "In hemodynamically STABLE trauma patients, contrast-enhanced CT of the abdomen/pelvis is the standard for detecting and grading solid-organ and other injuries. Unstable patients go to the OR instead.",
+    expAr: "في مرضى الرضح المستقرين ديناميكياً، التصوير المقطعي للبطن/الحوض مع تباين وريدي هو المعيار لكشف وتصنيف إصابات الأعضاء. أما غير المستقرين فيُنقلون للجراحة."
+  },
+  {
+    topic: "Surgery",
+    q: "A patient presents 3 days postoperatively with a wound that leaks serosanguinous fluid and then a sudden 'gush', with evisceration risk. Diagnosis?",
+    options: ["Wound dehiscence", "Seroma", "Wound infection only", "Incisional hernia"],
+    answer: 0,
+    exp: "Sudden serosanguinous ('pink') drainage from a laparotomy wound signals fascial dehiscence, which can progress to evisceration—cover with saline gauze and return to the OR for closure.",
+    expAr: "خروج سائل مصلي دموي (وردي) مفاجئ من جرح فتح البطن يشير إلى تفزّر اللفافة الذي قد يتطور لتدلي الأحشاء—يُغطى بشاش مبلل بالمالح ويُعاد للجراحة للإغلاق."
+  },
+  {
+    topic: "Surgery",
+    q: "A 25-year-old has an anal mass with severe pain on defecation and a tear in the posterior midline anal mucosa. Most likely diagnosis?",
+    options: ["Anal fissure", "External hemorrhoid", "Perianal abscess", "Rectal prolapse"],
+    answer: 0,
+    exp: "Severe pain on defecation with a posterior midline tear indicates an anal fissure. Treat with fiber, sitz baths, and topical agents (nitroglycerin/calcium-channel blockers); refractory cases may need lateral internal sphincterotomy.",
+    expAr: "ألم شديد عند التغوط مع شق في الخط المتوسط الخلفي = شق شرجي. يُعالَج بالألياف وحمامات المقعدة والمراهم (نتروغليسرين/حاصرات كالسيوم)؛ والحالات العنيدة قد تحتاج بضع المصرة الداخلية الجانبي."
+  },
+  {
+    topic: "Surgery",
+    q: "A tender, fluctuant, red mass near the anus with fever. Most appropriate management of a perianal abscess?",
+    options: ["Incision and drainage", "Oral antibiotics alone", "Sitz baths and observation", "Colonoscopy first"],
+    answer: 0,
+    exp: "A perianal abscess requires prompt incision and drainage; antibiotics alone are inadequate. Antibiotics are added for cellulitis, immunocompromise, or systemic signs.",
+    expAr: "الخراج حول الشرج يتطلب شقاً وتفجيراً فورياً؛ والمضادات وحدها غير كافية. تُضاف المضادات مع التهاب النسيج الخلوي أو نقص المناعة أو العلامات الجهازية."
+  },
+  {
+    topic: "Surgery",
+    q: "A 50-year-old has dysphagia to solids and liquids, regurgitation of undigested food, and a barium swallow showing a dilated esophagus with a 'bird-beak' narrowing. Diagnosis?",
+    options: ["Achalasia", "Esophageal cancer", "GERD", "Diffuse esophageal spasm"],
+    answer: 0,
+    exp: "Dysphagia to both solids and liquids with a 'bird-beak' tapering and dilated esophagus is achalasia (failure of LES relaxation); manometry confirms. Treat with pneumatic dilation, myotomy (Heller/POEM), or botulinum toxin.",
+    expAr: "عسر بلع للسوائل والصلبات معاً مع تضيّق بشكل 'منقار الطائر' ومريء متوسع = تعذّر الارتخاء (فشل ارتخاء المعصرة السفلية)؛ يؤكده قياس الضغط. يُعالَج بالتوسيع الهوائي أو بضع العضل (هيلر/POEM) أو ذيفان البوتولينوم."
+  },
+  {
+    topic: "Surgery",
+    q: "A neonate has bilious vomiting; upper GI contrast shows the duodenojejunal junction on the right with a corkscrew appearance. Diagnosis requiring urgent surgery?",
+    options: ["Midgut volvulus with malrotation", "Pyloric stenosis", "Duodenal atresia", "Necrotizing enterocolitis"],
+    answer: 0,
+    exp: "Bilious vomiting with a corkscrew duodenum and abnormal DJ junction position is midgut volvulus due to malrotation—a surgical emergency (Ladd procedure) to prevent bowel infarction.",
+    expAr: "قيء صفراوي مع اثني عشر بشكل لولبي وموضع غير طبيعي للوصل الاثني عشري الصائمي = انفتال معي متوسط بسبب سوء الدوران—طارئ جراحي (عملية Ladd) لمنع احتشاء الأمعاء."
+  },
+  {
+    topic: "Surgery",
+    q: "A 70-year-old with left lower quadrant pain, fever, and leukocytosis; CT shows sigmoid diverticulitis with localized wall thickening and no abscess or perforation. Best initial management?",
+    options: ["Antibiotics and bowel rest (conservative)", "Emergency Hartmann procedure", "Immediate elective colectomy", "Colonoscopy during the acute phase"],
+    answer: 0,
+    exp: "Uncomplicated acute diverticulitis is managed conservatively (antibiotics in selected cases, bowel rest, fluids). Surgery is for complications (abscess not drainable, perforation, obstruction, fistula). Colonoscopy is deferred ~6 weeks.",
+    expAr: "التهاب الرتوج الحاد غير المختلط يُدار محافظاً (مضادات في حالات مختارة، راحة معوية، سوائل). الجراحة للاختلاطات (خراج غير قابل للتفجير، انثقاب، انسداد، ناسور). يُؤجَّل التنظير نحو 6 أسابيع."
+  },
+  {
+    topic: "Surgery",
+    q: "Which finding indicates class of shock requiring blood transfusion rather than crystalloid alone after trauma?",
+    options: ["Persistent hypotension and tachycardia after 2 L crystalloid (transient/non-responder)", "Normal vitals after 500 mL", "Isolated mild tachycardia that resolves", "Normal urine output throughout"],
+    answer: 0,
+    exp: "A transient or non-responder to an initial crystalloid bolus (persistent hypotension/tachycardia) indicates ongoing significant hemorrhage requiring blood products and often operative control.",
+    expAr: "الاستجابة العابرة أو عدم الاستجابة لجرعة الكريستالويد الأولية (استمرار هبوط الضغط/تسرّع القلب) تدل على نزف مستمر مهم يتطلب منتجات دم وغالباً سيطرة جراحية."
+  },
+  {
+    topic: "Surgery",
+    q: "A patient with cirrhosis (Child-Pugh class C, 12 points) is being considered for elective umbilical hernia repair. What is the approximate perioperative mortality risk?",
+    options: ["Very high (~50% or more)", "Negligible (<1%)", "About 3%", "About 10%"],
+    answer: 0,
+    exp: "Child-Pugh class C signifies severe hepatic dysfunction with very high perioperative mortality (often cited around or above 50% for major surgery). Elective surgery should generally be avoided/optimized first.",
+    expAr: "الصنف C من Child-Pugh يعني خللاً كبدياً شديداً مع وفيات محيطة بالجراحة عالية جداً (غالباً حوالي 50% أو أكثر للجراحة الكبرى). يُفضّل تجنب الجراحة الاختيارية أو تحسين الحالة أولاً."
+  },
+  {
+    topic: "Surgery",
+    q: "Which bariatric operation relies PURELY on a restrictive mechanism?",
+    options: ["Adjustable gastric band (lap band)", "Roux-en-Y gastric bypass", "Biliopancreatic diversion", "Duodenal switch"],
+    answer: 0,
+    exp: "The adjustable gastric band is purely restrictive. Sleeve gastrectomy is mainly restrictive (with hormonal effects), while gastric bypass and duodenal switch/BPD combine restriction with malabsorption.",
+    expAr: "الحلقة المعدية القابلة للتعديل تقييدية بحتة. تكميم المعدة تقييدي أساساً (مع تأثيرات هرمونية)، بينما تحويل المسار والتحويل الصفراوي البنكرياسي يجمعان التقييد مع سوء الامتصاص."
+  },
+  {
+    topic: "Surgery",
+    q: "Which factor most reduces the risk of anastomotic leak in gastrointestinal surgery?",
+    options: ["Good tissue perfusion and tension-free anastomosis (e.g., adequate albumin/nutrition)", "Preoperative bevacizumab within a week of surgery", "Perioperative high-dose steroids", "Emergency surgery in a contaminated field"],
+    answer: 0,
+    exp: "Anastomotic healing depends on good blood supply, tension-free apposition, and adequate nutrition (e.g., albumin >3.5). Anti-angiogenics (bevacizumab), steroids, contamination, and hypoperfusion all increase leak risk.",
+    expAr: "التئام المفاغرة يعتمد على تروية جيدة ومفاغرة بلا شدّ وتغذية كافية (مثل ألبومين >3.5). مضادات التوعّي (بيفاسيزوماب) والستيرويدات والتلوث ونقص التروية كلها تزيد خطر التسريب."
+  },
+  {
+    topic: "Surgery",
+    q: "A surgical wound is contaminated when bowel contents spill onto the field. According to CDC wound classification, this is:",
+    options: ["Class III (contaminated)", "Class I (clean)", "Class II (clean-contaminated)", "Class IV (dirty-infected)"],
+    answer: 0,
+    exp: "Gross spillage from the GI tract (or major break in sterile technique) is a Class III contaminated wound. Class II is controlled entry into a hollow viscus without spillage; Class IV is established infection/perforation.",
+    expAr: "انسكاب واضح من الجهاز الهضمي (أو خرق كبير للتعقيم) = جرح صنف III ملوّث. الصنف II دخول مضبوط لعضو مجوف دون انسكاب؛ والصنف IV عدوى/انثقاب قائم."
+  },
+  {
+    topic: "Surgery",
+    q: "The most common anatomical site of a gastric peptic ulcer is:",
+    options: ["Lesser curvature near the incisura", "Greater curvature near the fundus", "Body of the stomach", "The pylorus only"],
+    answer: 0,
+    exp: "Gastric ulcers most commonly occur on the lesser curvature near the incisura angularis. Any gastric ulcer needs biopsy to exclude malignancy.",
+    expAr: "قرحة المعدة تحدث غالباً على الانحناء الأصغر قرب الثلمة الزاويّة. أي قرحة معدية تحتاج خزعة لاستبعاد الخباثة."
+  },
+  {
+    topic: "Surgery",
+    q: "Which extraintestinal manifestation of inflammatory bowel disease does NOT improve after bowel resection?",
+    options: ["Ankylosing spondylitis", "Erythema nodosum", "Peripheral arthritis", "Episcleritis"],
+    answer: 0,
+    exp: "Most IBD extraintestinal manifestations tied to disease activity (erythema nodosum, peripheral arthritis, episcleritis) improve with control/resection, but axial disease (ankylosing spondylitis) and primary sclerosing cholangitis run independent courses.",
+    expAr: "معظم التظاهرات خارج المعوية المرتبطة بنشاط المرض (حمامى عقدة، التهاب مفاصل محيطي، التهاب ظاهر الصلبة) تتحسن بالسيطرة/الاستئصال، لكن المرض المحوري (التهاب الفقار اللاصق) والتهاب الأقنية المصلب الأولي يسيران مساراً مستقلاً."
+  },
+  {
+    topic: "Surgery",
+    q: "The most common cause of large-bowel obstruction in adults is:",
+    options: ["Colorectal malignancy", "Diverticulitis", "Volvulus", "Fecal impaction"],
+    answer: 0,
+    exp: "In adults, colorectal cancer is the most common cause of large-bowel obstruction, followed by diverticular strictures and volvulus.",
+    expAr: "عند البالغين، سرطان القولون والمستقيم هو السبب الأشيع لانسداد الأمعاء الغليظة، يليه تضيّقات الرتوج والانفتال."
+  },
+  {
+    topic: "Surgery",
+    q: "During a Whipple (pancreaticoduodenectomy), the duodenum is removed with the pancreatic head. The main anatomical reason is:",
+    options: ["Shared arterial blood supply of the pancreatic head and duodenum", "The tumor always invades the duodenal wall", "Shared venous drainage only", "For technical convenience only"],
+    answer: 0,
+    exp: "The pancreatic head and duodenum share the pancreaticoduodenal arterial arcades, so removing the head necessitates removing the duodenum to maintain viability and oncologic clearance.",
+    expAr: "يتشارك رأس البنكرياس والاثني عشر في الأقواس الشريانية البنكرياسية الاثني عشرية، لذا يستلزم استئصال الرأس إزالة الاثني عشر للحفاظ على الحيوية والسلامة الورمية."
+  },
+  {
+    topic: "Surgery",
+    q: "A patient with ischemic colitis is hemodynamically stable with mild-to-moderate abdominal pain and bloody diarrhea. Best initial management?",
+    options: ["Supportive care: bowel rest, IV fluids, and antibiotics", "Emergency mesenteric revascularization", "Immediate colectomy for all", "Long-term anticoagulation only"],
+    answer: 0,
+    exp: "Most non-gangrenous ischemic colitis improves with supportive care (bowel rest, fluids, antibiotics). Surgery (resection) is reserved for peritonitis, perforation, gangrene, or clinical deterioration.",
+    expAr: "معظم حالات التهاب القولون الإقفاري غير المتموّت تتحسن بالعلاج الداعم (راحة معوية، سوائل، مضادات). الجراحة (الاستئصال) للالتهاب الصفاقي أو الانثقاب أو الغنغرينا أو التدهور السريري."
+  },
+  {
+    topic: "Surgery",
+    q: "Which primary bone tumor is considered the most locally aggressive benign tumor (occurs at the epiphysis of long bones)?",
+    options: ["Giant cell tumor", "Osteoid osteoma", "Enchondroma", "Osteochondroma"],
+    answer: 0,
+    exp: "Giant cell tumor of bone is a locally aggressive benign tumor typically at the epiphysis of long bones (e.g., distal femur), with a 'soap-bubble' lytic appearance; it can recur and rarely metastasize.",
+    expAr: "الورم ذو الخلايا العملاقة في العظم ورم حميد عدواني موضعياً يظهر عادةً في مشاشة العظام الطويلة (مثل الفخذ القاصي) بمظهر حالّ يشبه 'فقاعة الصابون'؛ قد ينكس ونادراً ينتقل."
+  },
+  {
+    topic: "Surgery",
+    q: "Which hernia is located between the lateral edge of the rectus muscle (medially) and the semilunar line?",
+    options: ["Spigelian hernia", "Lumbar hernia", "Littre hernia", "Amyand hernia"],
+    answer: 0,
+    exp: "A Spigelian hernia occurs through the spigelian fascia along the semilunar line lateral to the rectus. (Littre = hernia containing a Meckel diverticulum; Amyand = appendix within an inguinal hernia.)",
+    expAr: "الفتق الشبيجلي يحدث عبر اللفافة الشبيجلية على طول الخط الهلالي جانب العضلة المستقيمة. (ليتر = فتق يحتوي رتج ميكل؛ أمياند = زائدة داخل فتق أربي.)"
+  },
+  {
+    topic: "Surgery",
+    q: "Regarding breast ultrasound, which statement is correct?",
+    options: ["It helps distinguish a solid from a cystic lesion", "It is the routine screening test for breast cancer", "It is less useful in women with dense breasts", "It always replaces mammography"],
+    answer: 0,
+    exp: "Ultrasound is excellent for distinguishing solid from cystic masses and is especially useful in dense breasts and younger women. Mammography remains the routine screening tool; US is complementary.",
+    expAr: "التصوير فوق الصوتي ممتاز للتمييز بين الكتل الصلبة والكيسية ومفيد خاصة في الثدي الكثيف والنساء الأصغر. تبقى الماموغرافيا أداة المسح الروتينية والتصوير الصوتي مكمّل."
+  },
+  {
+    topic: "Surgery",
+    q: "A 3-year-old child with acute pancreatitis — the most common etiology in children is:",
+    options: ["Blunt abdominal trauma (and biliary/idiopathic causes)", "Excess alcohol intake", "Gallstones as the leading single cause", "Autoimmune pancreatitis"],
+    answer: 0,
+    exp: "In children, acute pancreatitis is commonly caused by trauma, systemic illness, medications, structural/biliary anomalies, and idiopathic causes—unlike adults where alcohol and gallstones dominate.",
+    expAr: "عند الأطفال، التهاب البنكرياس الحاد غالباً بسبب الرضح والأمراض الجهازية والأدوية والشذوذات البنيوية/الصفراوية وأسباب مجهولة—بخلاف البالغين حيث يسيطر الكحول والحصيات."
+  },
+  {
+    topic: "Surgery",
+    q: "Which preoperative risk-assessment tool is NOT primarily designed for surgical risk (it grades liver disease severity)?",
+    options: ["MELD score", "ASA classification", "ACS NSQIP calculator", "Revised Cardiac Risk Index"],
+    answer: 0,
+    exp: "MELD grades severity of liver disease/mortality and is used for transplant prioritization (also useful in cirrhotic surgical risk), but the general perioperative tools are ASA, ACS NSQIP, and cardiac indices.",
+    expAr: "درجة MELD تقيّم شدة مرض الكبد/الوفيات وتُستخدم لأولوية الزرع (ومفيدة في خطر الجراحة لدى المتشمعين)، أما أدوات الخطر المحيطة بالجراحة العامة فهي ASA وACS NSQIP والمؤشرات القلبية."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 2-week-old, exclusively breastfed, has painless rectal bleeding (streaks of blood in mucousy stools), is thriving and well. Best initial management?",
+    options: ["Continue breastfeeding while the mother eliminates cow's milk and soy", "Stop breastfeeding and switch to soy formula", "Allergy testing for the infant", "Switch to hydrolyzed formula immediately"],
+    answer: 0,
+    exp: "This is milk-protein (allergic) proctocolitis in a well, thriving infant. First step is maternal elimination of cow's milk (and often soy) while continuing breastfeeding; symptoms typically resolve. Hydrolyzed formula is for formula-fed infants.",
+    expAr: "هذا التهاب المستقيم والقولون التحسسي ببروتين الحليب عند رضيع بحالة جيدة ونمو جيد. الخطوة الأولى حمية الأم من حليب البقر (وغالباً الصويا) مع استمرار الرضاعة؛ وتزول الأعراض عادةً. الحليب المحلّل للرضّع الذين يتغذون بالحليب الصناعي."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A premature infant born at 29 weeks, now 14 days old, develops lethargy, abdominal distension/tenderness, and X-ray shows pneumatosis intestinalis. Which is a PROTECTIVE factor for this condition?",
+    options: ["Exclusive breast milk feeding", "Probiotics as the main preventive", "Cesarean delivery", "Anti-reflux formula"],
+    answer: 0,
+    exp: "This is necrotizing enterocolitis (NEC); pneumatosis intestinalis is the hallmark. Exclusive human/breast milk feeding is protective. Management: NPO, NG decompression, IV antibiotics, and surgery for perforation.",
+    expAr: "هذا التهاب الأمعاء والقولون الناخر (NEC)؛ والانتفاخ الهوائي المعوي علامته المميزة. الرضاعة الحصرية بحليب الأم عامل وقائي. التدبير: صيام، تخفيف بأنبوب أنفي معدي، مضادات وريدية، وجراحة عند الانثقاب."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 3-year-old with ataxia, recurrent sinopulmonary infections, and telangiectasias of the conjunctiva/skin. Which investigation should be AVOIDED?",
+    options: ["Ionizing-radiation imaging (e.g., repeated X-rays/CT)", "Serum immunoglobulins", "Alpha-fetoprotein level", "Neurologic examination"],
+    answer: 0,
+    exp: "Ataxia-telangiectasia involves defective DNA repair with radiation hypersensitivity and cancer predisposition; ionizing radiation should be minimized. AFP is typically elevated and IgA/IgG may be low.",
+    expAr: "الرنح مع توسع الشعيرات ينطوي على خلل إصلاح الحمض النووي مع فرط حساسية للإشعاع واستعداد للسرطان؛ لذا يجب تقليل الإشعاع المؤيّن. عادةً يرتفع AFP وقد ينخفض IgA/IgG."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 6-year-old, well child has an incidental platelet count of 25,000 with normal other cell lines and no blasts on smear, no organomegaly, and only minor bruising, days after a viral illness. Best next step?",
+    options: ["Clinical observation and avoidance of trauma", "IV steroids for all cases", "Bone marrow biopsy first", "Rituximab"],
+    answer: 0,
+    exp: "This is childhood immune thrombocytopenia (ITP), usually post-viral and self-limited. In a well child without major bleeding, observation is appropriate. Treat (IVIG/steroids/anti-D) if significant bleeding or very low counts with risk.",
+    expAr: "هذه فرفرية نقص الصفيحات المناعية عند الأطفال، غالباً بعد عدوى فيروسية ومحدودة ذاتياً. عند طفل بحالة جيدة دون نزف مهم، المراقبة مناسبة. يُعالَج (IVIG/ستيرويد/anti-D) عند نزف مهم أو تعداد منخفض جداً مع خطورة."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 1-year-old who drinks large amounts of cow's milk has microcytic anemia (Hb 8.2, MCV 68, high RDW). Most likely cause?",
+    options: ["Iron deficiency from excessive cow's milk intake", "Recent fava bean exposure", "Vitamin D overdose", "High carbohydrate intake"],
+    answer: 0,
+    exp: "Excessive cow's milk causes iron-deficiency anemia (low iron content, GI microbleeding, and reduced iron absorption). Limit milk, supplement iron, and screen dietary intake.",
+    expAr: "الإفراط في حليب البقر يسبب فقر دم بعوز الحديد (محتوى حديد منخفض، نزف معوي مجهري، وتقليل امتصاص الحديد). يُحدّ من الحليب ويُعطى الحديد ويُقيّم النظام الغذائي."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 3-year-old with recurrent infections, coarse facies, and a chest X-ray showing absent thymic shadow, plus hypocalcemia and a cardiac defect. Which follow-up is essential?",
+    options: ["Echocardiography (DiGeorge/22q11 deletion)", "Liver function tests", "Intraocular pressure monitoring", "Platelet counts"],
+    answer: 0,
+    exp: "DiGeorge syndrome (22q11.2 deletion): CATCH-22 — Cardiac defects (conotruncal), Abnormal facies, Thymic hypoplasia, Cleft palate, Hypocalcemia. Echocardiography is essential to evaluate the conotruncal cardiac anomalies.",
+    expAr: "متلازمة دي جورج (حذف 22q11.2): CATCH-22 — عيوب قلبية (مخروطية جذعية)، ملامح وجه شاذة، نقص تنسّج التوتة، شق الحنك، نقص كالسيوم. تخطيط صدى القلب ضروري لتقييم الشذوذات القلبية."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 7-day-old born at home presents with vomiting, hypotonia, poor feeding, and a sweet urine odor. Which test best advances the diagnosis?",
+    options: ["Plasma amino acids", "Very-long-chain fatty acids", "Urine ketones", "Transferrin isoforms"],
+    answer: 0,
+    exp: "Neonatal encephalopathy with maple-syrup urine odor suggests Maple Syrup Urine Disease; plasma amino acids show elevated branched-chain amino acids (leucine, isoleucine, valine).",
+    expAr: "اعتلال دماغي وليدي مع رائحة بول شراب القيقب يوحي بداء بول شراب القيقب؛ الأحماض الأمينية في البلازما تُظهر ارتفاع الأحماض متفرعة السلسلة (لوسين، آيزولوسين، فالين)."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 2-week-old with recurrent vomiting, hepatomegaly, and fasting hypoglycemia WITHOUT ketones in the urine. Most likely diagnosis?",
+    options: ["Medium-chain acyl-CoA dehydrogenase deficiency (MCADD)", "Glycogen storage disease type II (Pompe)", "G6PD deficiency", "Maple syrup urine disease"],
+    answer: 0,
+    exp: "Hypoketotic hypoglycemia with hepatomegaly during fasting suggests a fatty-acid oxidation defect such as MCADD (impaired ketogenesis). Management: avoid fasting, provide glucose during illness.",
+    expAr: "نقص سكر ناقص الكيتونات مع ضخامة كبد أثناء الصيام يوحي بخلل أكسدة الأحماض الدهنية مثل MCADD (ضعف تكوّن الكيتونات). التدبير: تجنب الصيام وتقديم الغلوكوز أثناء المرض."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 6-year-old, 1 week after a diarrheal illness, develops descending... actually ascending weakness, areflexia, and difficulty walking; CSF shows albuminocytologic dissociation. Diagnosis?",
+    options: ["Guillain-Barré syndrome", "Transverse myelitis", "Botulism", "Poliomyelitis"],
+    answer: 0,
+    exp: "Ascending symmetric weakness with areflexia after an infection, plus high CSF protein with normal cell count (albuminocytologic dissociation), is Guillain-Barré syndrome. Treat with IVIG or plasmapheresis and monitor respiration.",
+    expAr: "ضعف صاعد متناظر مع غياب المنعكسات بعد عدوى، مع ارتفاع بروتين السائل الدماغي الشوكي وتعداد خلوي طبيعي (انفصال بروتيني خلوي) = متلازمة غيلان باريه. العلاج IVIG أو فصادة البلازما مع مراقبة التنفس."
+  },
+  {
+    topic: "Pediatrics",
+    q: "An 8-year-old boy with new adrenal insufficiency, declining school performance/behavior, and MRI showing diffuse white-matter lesions. Which test confirms the diagnosis?",
+    options: ["Very-long-chain fatty acids (X-linked adrenoleukodystrophy)", "17-hydroxyprogesterone", "21-hydroxylase activity", "Anti-adrenal antibodies"],
+    answer: 0,
+    exp: "The combination of adrenal insufficiency, neurobehavioral decline, and demyelinating white-matter lesions is X-linked adrenoleukodystrophy; elevated very-long-chain fatty acids confirm it.",
+    expAr: "اجتماع قصور الكظر والتدهور العصبي السلوكي وآفات المادة البيضاء المزيلة للنخاعين = حثل بيضاء الكظر المرتبط بـX؛ ويؤكده ارتفاع الأحماض الدهنية طويلة السلسلة جداً."
+  },
+  {
+    topic: "Pediatrics",
+    q: "Which laboratory finding is typical of hypocalcemia caused by hypoparathyroidism?",
+    options: ["High serum phosphate", "High alkaline phosphatase", "High vitamin D", "High magnesium"],
+    answer: 0,
+    exp: "Hypoparathyroidism causes low PTH → low calcium and HIGH phosphate (PTH normally promotes renal phosphate excretion). Alkaline phosphatase is usually normal.",
+    expAr: "قصور جارات الدرقية يسبب انخفاض PTH → نقص كالسيوم وارتفاع الفوسفات (لأن PTH يعزّز طرح الفوسفات الكلوي). الفوسفاتاز القلوي عادةً طبيعي."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 10-year-old boy with short stature: consistently 5th percentile height since age 2, bone age of 8 years (delayed), a father who had delayed puberty, and normal labs. Most likely diagnosis?",
+    options: ["Constitutional delay of growth and puberty", "Growth hormone deficiency", "Laron syndrome", "Familial short stature"],
+    answer: 0,
+    exp: "Delayed bone age with a family history of delayed puberty and normal work-up indicates constitutional delay — a normal variant; these children are 'late bloomers' and reach normal adult height. (In familial short stature, bone age equals chronologic age.)",
+    expAr: "تأخر عمر العظام مع قصة عائلية لتأخر البلوغ وفحوص طبيعية = التأخر الدستوري في النمو والبلوغ—تنوّع طبيعي؛ هؤلاء 'متأخرو النضج' ويبلغون طولاً بالغاً طبيعياً. (في قصر القامة العائلي يساوي عمر العظام العمر الزمني.)"
+  },
+  {
+    topic: "Pediatrics",
+    q: "Which is an indication to perform a renal biopsy in suspected post-streptococcal glomerulonephritis?",
+    options: ["Persistently low C3 beyond 8 weeks (or atypical/severe course)", "Age under 5 years", "Any gross hematuria", "A clear history of preceding streptococcal infection"],
+    answer: 0,
+    exp: "PSGN is usually diagnosed clinically. Biopsy is reserved for atypical features—persistent hypocomplementemia (>6–8 weeks), nephrotic-range proteinuria, rapidly progressive renal failure, or no evidence of streptococcal infection—to exclude other glomerulonephritides.",
+    expAr: "يُشخَّص التهاب الكلية بعد العقديات سريرياً عادةً. تُحجَز الخزعة للملامح غير النمطية—انخفاض المتممة المستمر (>6-8 أسابيع)، بيلة بروتينية بمدى كلوي، فشل كلوي سريع التقدم، أو غياب دليل عدوى عقدية—لاستبعاد أنواع أخرى."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 7-year-old had nephrotic syndrome that fully resolved with steroids a month ago, and now relapses with generalized edema, 3+ proteinuria, low albumin, and hyperlipidemia. Best management now?",
+    options: ["Restart corticosteroid therapy", "Renal biopsy before any treatment", "Fluid restriction only", "Cyclophosphamide"],
+    answer: 0,
+    exp: "Most childhood nephrotic syndrome is steroid-responsive minimal change disease; a relapse is treated by restarting steroids. Biopsy/steroid-sparing agents are considered for steroid resistance or frequent relapses.",
+    expAr: "معظم المتلازمة الكلائية عند الأطفال داء تغيرات قليلة مستجيب للستيرويد؛ والنكس يُعالَج بإعادة الستيرويد. تُدرَس الخزعة/الأدوية الموفّرة للستيرويد عند المقاومة أو تكرار النكس."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A newborn (birth weight 1900 g) with head circumference below the 3rd percentile and periventricular calcifications; diagnosis by urine PCR. Most common long-term complication?",
+    options: ["Sensorineural hearing loss", "Cataract", "Dental deformities", "Aortic stenosis"],
+    answer: 0,
+    exp: "Congenital CMV (periventricular calcifications, microcephaly, urine PCR) most commonly leads to progressive sensorineural hearing loss; some infants benefit from antiviral (valganciclovir) therapy.",
+    expAr: "عدوى CMV الخلقية (تكلسات حول البطينات، صغر رأس، PCR بولي) تؤدي غالباً إلى فقدان سمع حسي عصبي تدريجي؛ ويستفيد بعض الرضّع من مضاد الفيروسات (فالغانسيكلوفير)."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 14-year-old basketball player has bilateral pain and swelling over the tibial tubercles, worse with running/jumping. Best initial treatment (Osgood-Schlatter)?",
+    options: ["Rest, activity modification, and analgesics", "Immediate surgery", "Antibiotics", "Systemic steroids"],
+    answer: 0,
+    exp: "Osgood-Schlatter disease (traction apophysitis of the tibial tubercle) in active adolescents is self-limited; treat with rest, activity modification, ice, stretching, and NSAIDs.",
+    expAr: "داء أوسغود-شلاتر (التهاب النتوء المشاشي للحدبة الظنبوبية) عند المراهقين النشطين محدود ذاتياً؛ يُعالَج بالراحة وتعديل النشاط والثلج والتمطيط ومضادات الالتهاب."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 5-year-old boy with easy bruising, platelet count 25,000, otherwise normal counts, no blasts, no organomegaly. Most appropriate next step?",
+    options: ["Clinical monitoring and trauma avoidance", "IV steroids", "IVIG", "Anti-CD20 (rituximab)"],
+    answer: 0,
+    exp: "Isolated thrombocytopenia in a well child with only minor skin findings is typical ITP; observation is appropriate when there is no significant mucosal/organ bleeding. Pharmacologic therapy is reserved for significant bleeding.",
+    expAr: "نقص صفيحات معزول عند طفل بحالة جيدة مع علامات جلدية بسيطة فقط = ITP نموذجي؛ المراقبة مناسبة عند غياب نزف مخاطي/عضوي مهم. يُحجَز العلاج الدوائي للنزف المهم."
+  },
+  {
+    topic: "Pediatrics",
+    q: "An 11-year-old with fever and dry cough develops target (erythema multiforme) skin lesions and a new anemia; cold agglutinins may be positive. Most likely pathogen?",
+    options: ["Mycoplasma pneumoniae", "Streptococcus pneumoniae", "Streptococcus pyogenes", "Haemophilus influenzae"],
+    answer: 0,
+    exp: "Atypical (walking) pneumonia with extrapulmonary features—erythema multiforme/Stevens-Johnson and cold-agglutinin hemolytic anemia—is classic for Mycoplasma pneumoniae. Treat with a macrolide.",
+    expAr: "التهاب رئة لانمطي مع تظاهرات خارج رئوية—حمامى عديدة الأشكال/ستيفنز-جونسون وفقر دم انحلالي براصات باردة—كلاسيكي للميكوبلازما الرئوية. يُعالَج بماكروليد."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A child with bloody diarrhea after a barbecue develops, 3 weeks later, ascending weakness with absent patellar reflexes. Which pathogen most likely triggered this (Guillain-Barré)?",
+    options: ["Campylobacter jejuni", "Shigella dysenteriae", "Salmonella enterica", "Norovirus"],
+    answer: 0,
+    exp: "Campylobacter jejuni (undercooked poultry) is the most common infectious trigger of Guillain-Barré syndrome via molecular mimicry of gangliosides.",
+    expAr: "العطيفة الصائمية (دجاج غير مطهو جيداً) هي المحرّض المعدي الأشيع لمتلازمة غيلان باريه عبر المحاكاة الجزيئية للغانغليوزيدات."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 6-year-old healthy, vaccinated child with fever and sore throat, tonsillar exudate, tender anterior cervical nodes, and NO cough. Best next step?",
+    options: ["Rapid strep test/throat culture and treat if positive", "Empiric amoxicillin without testing for all", "Tonsillectomy referral", "Reassurance and fluids only, no testing"],
+    answer: 0,
+    exp: "Features suggesting group A strep (Centor: exudate, tender nodes, fever, no cough) warrant a rapid antigen test/culture; treat confirmed cases with penicillin/amoxicillin to prevent rheumatic fever.",
+    expAr: "الملامح الموحية بالعقدية المجموعة A (Centor: إفراز، عقد مؤلمة، حمى، دون سعال) تستدعي اختبار مستضد سريع/زرع؛ وتُعالَج الحالات المؤكدة بالبنسلين/أموكسيسيلين لمنع الحمى الرثوية."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 12-year-old competitive swimmer has ear pain with a tender, swollen ear canal and purulent discharge. Which supports the diagnosis of otitis externa?",
+    options: ["Pain on traction of the pinna / frequent ear-canal cleaning with cotton swabs", "A red, bulging tympanic membrane", "Vertigo on neurologic exam", "Recent streptococcal pneumonia"],
+    answer: 0,
+    exp: "Otitis externa ('swimmer's ear') features canal edema, discharge, and pain on pinna traction/tragus pressure, often after water exposure or cotton-swab trauma. Treat with topical antibiotic ± steroid drops.",
+    expAr: "التهاب الأذن الخارجية ('أذن السباح') يتميز بوذمة القناة وإفراز وألم عند شدّ الصيوان/الضغط على الزنمة، غالباً بعد التعرض للماء أو رض بأعواد القطن. يُعالَج بقطرات مضاد حيوي ± ستيرويد موضعية."
+  },
+  {
+    topic: "Pediatrics",
+    q: "Which drug–side-effect pairing is correct for antituberculous therapy?",
+    options: ["Rifampin — orange discoloration of secretions/urine", "Rifampin — optic neuritis", "Ethambutol — peripheral neuritis", "Ethambutol — hyperuricemia"],
+    answer: 0,
+    exp: "Rifampin causes harmless orange discoloration of body fluids. Ethambutol causes optic neuritis (color vision loss); isoniazid causes peripheral neuritis (give pyridoxine); pyrazinamide causes hyperuricemia.",
+    expAr: "الريفامبين يسبب تلوناً برتقالياً غير ضار لسوائل الجسم. الإيثامبوتول يسبب التهاب العصب البصري (فقد رؤية الألوان)؛ والآيزونيازيد التهاب أعصاب محيطية (يُعطى بيريدوكسين)؛ والبيرازيناميد فرط حمض اليوريك."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 3-month-old formula-fed infant has frequent regurgitation, irritability, and arching of the back after feeds; exam and neuro are normal. Most appropriate management (GERD)?",
+    options: ["Conservative measures: thickened feeds, smaller volumes, upright positioning", "Metoclopramide", "Switch to soy formula", "Orphenadrine"],
+    answer: 0,
+    exp: "Uncomplicated infant GER (a 'happy spitter' or mild irritability) is managed conservatively — thickened/smaller feeds, upright positioning, and reassurance. Prokinetics like metoclopramide are avoided due to side effects.",
+    expAr: "الجزر المعدي المريئي غير المختلط عند الرضيع يُدار محافظاً—تكثيف/تصغير الوجبات، وضعية منتصبة، وطمأنة. تُتجنَّب الأدوية المحرّكة مثل ميتوكلوبراميد بسبب آثارها الجانبية."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 13-year-old with epigastric pain worsened after eating, nausea, and black stools after taking a medication. Which drug most likely caused this?",
+    options: ["Ibuprofen (NSAID)", "Metronidazole", "Clarithromycin", "Omeprazole"],
+    answer: 0,
+    exp: "NSAIDs (ibuprofen) inhibit prostaglandins and cause gastric mucosal injury, peptic ulcers, and upper GI bleeding (melena). PPIs like omeprazole are protective.",
+    expAr: "مضادات الالتهاب اللاستيرويدية (إيبوبروفين) تثبط البروستاغلاندينات وتسبب أذية مخاطية معدية وقرحات ونزفاً هضمياً علوياً (براز أسود). أما مثبطات المضخة مثل أوميبرازول فوقائية."
+  },
+  {
+    topic: "Pediatrics",
+    q: "Which feature is more characteristic of ulcerative colitis than Crohn disease?",
+    options: ["Continuous colonic involvement / toxic megacolon", "Perianal disease and fistulae", "Skip lesions", "Transmural granulomas"],
+    answer: 0,
+    exp: "Ulcerative colitis is continuous, mucosal, and limited to the colon and can cause toxic megacolon. Crohn disease has skip lesions, transmural inflammation, granulomas, and perianal fistulae.",
+    expAr: "التهاب القولون التقرحي مستمر ومخاطي ومحصور بالقولون وقد يسبب تضخم القولون السمي. أما داء كرون فآفات متقطعة والتهاب عبر الجدار وأورام حبيبية وناسور حول الشرج."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 2-year-old with periorbital swelling has hypoalbuminemia, normal liver function, and NO proteinuria on urinalysis. Most likely diagnosis?",
+    options: ["Protein-losing enteropathy", "Nephrotic syndrome", "Acute glomerulonephritis", "Allergic reaction"],
+    answer: 0,
+    exp: "Hypoalbuminemia with edema but WITHOUT proteinuria and with normal liver function points to protein loss through the gut (protein-losing enteropathy) rather than the kidney. Nephrotic syndrome would show heavy proteinuria.",
+    expAr: "نقص الألبومين مع وذمة لكن دون بيلة بروتينية ومع وظائف كبد طبيعية يشير إلى فقد البروتين عبر الأمعاء (اعتلال معوي مفقّد للبروتين) لا الكلية. المتلازمة الكلائية كانت ستُظهر بيلة بروتينية غزيرة."
+  },
+  {
+    topic: "Pediatrics",
+    q: "Which is a recognized risk factor for Sudden Infant Death Syndrome (SIDS)?",
+    options: ["Prone (tummy) sleeping position and maternal smoking", "Supine sleeping position", "Breastfeeding", "Female sex"],
+    answer: 0,
+    exp: "SIDS risk factors include prone/side sleeping, soft bedding, overheating, maternal smoking, and prematurity. Supine sleeping ('back to sleep'), breastfeeding, and pacifier use are protective. Peak age is 2–4 months.",
+    expAr: "عوامل خطر SIDS تشمل النوم على البطن/الجنب، والفراش الطري، وفرط التدفئة، وتدخين الأم، والخداج. النوم على الظهر والرضاعة الطبيعية واستخدام اللهاية وقائية. ذروة العمر 2-4 أشهر."
+  },
+  {
+    topic: "Pediatrics",
+    q: "Which scenario meets the definition of a HIGHER-risk BRUE (brief resolved unexplained event)?",
+    options: ["Age under 2 months or prematurity (born <32 weeks)", "Event lasting under 1 minute", "Term infant older than 2 months", "A single, brief self-resolving event in a well infant"],
+    answer: 0,
+    exp: "Lower-risk BRUE requires age >60 days, gestational age ≥32 weeks (and ≥45 weeks corrected), a first event lasting <1 minute, no CPR by a trained provider, and no concerning features. Age <2 months or prematurity makes it higher-risk needing evaluation.",
+    expAr: "BRUE منخفض الخطورة يتطلب عمراً >60 يوماً، وعمراً حملياً ≥32 أسبوعاً (و≥45 مصححاً)، وحدثاً أول <دقيقة، ودون إنعاش من مدرَّب، ودون ملامح مقلقة. العمر <شهرين أو الخداج يجعله أعلى خطورة يتطلب تقييماً."
+  },
+  {
+    topic: "Pediatrics",
+    q: "An unvaccinated 5-year-old with high fever, sore throat, difficulty swallowing, drooling, and worsening dyspnea; lateral neck X-ray shows a 'thumbprint' sign. Most likely pathogen?",
+    options: ["Haemophilus influenzae type B", "Respiratory syncytial virus", "Corynebacterium diphtheriae", "Parainfluenza virus"],
+    answer: 0,
+    exp: "The 'thumbprint sign' (swollen epiglottis) in an unvaccinated child with drooling and distress is acute epiglottitis, classically caused by Hib. Secure the airway first; then IV antibiotics (e.g., ceftriaxone).",
+    expAr: "علامة 'بصمة الإبهام' (لسان مزمار متورم) عند طفل غير مُلقَّح مع سيلان لعاب وضائقة = التهاب لسان المزمار الحاد، وكلاسيكياً بسبب Hib. أمِّن المجرى الهوائي أولاً ثم مضادات وريدية (مثل سيفترياكسون)."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 4-month-old presents with a first simple febrile seizure lasting 1 minute, now alert with a normal exam and an obvious viral source. In which situation is lumbar puncture strongly considered?",
+    options: ["Infant younger than 6–12 months or incompletely vaccinated / on antibiotics", "A well-appearing 3-year-old with a simple febrile seizure", "Any child with fever", "A child with a clear ear infection and simple febrile seizure at age 2"],
+    answer: 0,
+    exp: "Simple febrile seizures (6 months–5 years) usually need no LP. LP is strongly considered in infants <6–12 months, those incompletely immunized (Hib/pneumococcus), pretreated with antibiotics, or with meningeal signs.",
+    expAr: "الاختلاجات الحرورية البسيطة (6 أشهر-5 سنوات) لا تحتاج بزلاً عادةً. يُدرَس البزل بقوة عند الرضّع <6-12 شهراً، وغير مكتملي التلقيح (Hib/المكورات الرئوية)، أو المعالَجين مسبقاً بمضادات، أو مع علامات سحائية."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 15-year-old returning from hiking in northern Israel has biphasic fever, conjunctival suffusion, myalgia, then jaundice and thrombocytopenia; pathogen identified in urine. Most likely organism?",
+    options: ["Leptospira", "Rickettsia conorii", "Legionella", "Naegleria fowleri"],
+    answer: 0,
+    exp: "Biphasic illness with conjunctival suffusion, myalgia, jaundice, and renal/hepatic involvement after freshwater exposure is leptospirosis (Weil disease when severe). Treat with penicillin or doxycycline.",
+    expAr: "مرض ثنائي الطور مع احتقان ملتحمة وألم عضلي ويرقان وإصابة كلوية/كبدية بعد التعرض للمياه العذبة = داء البريميات (مرض فايل عند الشدة). يُعالَج بالبنسلين أو دوكسيسيكلين."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A 28-year-old at 39 weeks in active labor develops sudden painful vaginal bleeding, a firm tender uterus, and fetal distress after a fall. Most likely diagnosis?",
+    options: ["Placental abruption", "Placenta previa", "Uterine rupture", "Vasa previa"],
+    answer: 0,
+    exp: "Painful vaginal bleeding with a tense, tender uterus and fetal distress (often after trauma/hypertension) is placental abruption. Management depends on maternal/fetal stability—often urgent delivery.",
+    expAr: "نزف مهبلي مؤلم مع رحم متوتر مؤلم وضائقة جنينية (غالباً بعد رض/ارتفاع ضغط) = انفصال المشيمة الباكر. يعتمد التدبير على استقرار الأم/الجنين—وغالباً ولادة عاجلة."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A pregnant woman at 12 weeks has severe nausea/vomiting, weight loss, a uterus larger than dates, no fetal heart tones, and β-hCG markedly elevated; ultrasound shows a 'snowstorm' pattern. Diagnosis?",
+    options: ["Complete hydatidiform mole", "Threatened abortion", "Twin pregnancy", "Ectopic pregnancy"],
+    answer: 0,
+    exp: "A 'snowstorm' ultrasound with very high β-hCG, hyperemesis, and size-greater-than-dates uterus indicates a complete molar pregnancy. Treat with uterine evacuation and monitor β-hCG for gestational trophoblastic neoplasia.",
+    expAr: "صورة 'عاصفة ثلجية' مع β-hCG مرتفع جداً وقيء مفرط ورحم أكبر من العمر = حمل عنقودي كامل. يُعالَج بإفراغ الرحم ومتابعة β-hCG لكشف الورم الأرومي الغاذي."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A woman at 30 weeks has BP 150/95, 2+ proteinuria, no symptoms. Best classification and key medication for seizure prophylaxis if she progresses to severe features?",
+    options: ["Preeclampsia; magnesium sulfate", "Gestational hypertension; phenytoin", "Chronic hypertension; diazepam", "Normal pregnancy; no treatment"],
+    answer: 0,
+    exp: "New hypertension with proteinuria after 20 weeks is preeclampsia. If severe features develop, magnesium sulfate is used for seizure prophylaxis, and antihypertensives control BP; timing of delivery depends on severity/gestation.",
+    expAr: "ارتفاع ضغط جديد مع بيلة بروتينية بعد 20 أسبوعاً = مقدمات الارتعاج. عند ظهور ملامح شديدة تُستخدم كبريتات المغنيسيوم للوقاية من الاختلاج، وخافضات الضغط تضبط الضغط؛ وتوقيت الولادة حسب الشدة/العمر الحملي."
+  },
+  {
+    topic: "OB-GYN",
+    q: "At the routine 24–28 week visit, which test screens for gestational diabetes?",
+    options: ["Oral glucose challenge/tolerance test", "Fasting cortisol", "Hemoglobin electrophoresis", "Thyroid ultrasound"],
+    answer: 0,
+    exp: "Gestational diabetes is screened at 24–28 weeks with a glucose challenge test (50 g) followed by a diagnostic oral glucose tolerance test if abnormal (or a one-step 75 g OGTT).",
+    expAr: "يُفحَص سكري الحمل في 24-28 أسبوعاً باختبار تحدي الغلوكوز (50غ) يتبعه اختبار تحمل الغلوكوز الفموي التشخيصي إذا كان غير طبيعي (أو اختبار خطوة واحدة 75غ)."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A 25-year-old with amenorrhea, hirsutism, obesity, and infertility; LH:FSH ratio elevated and polycystic ovaries on ultrasound. First-line therapy for ovulation induction (if she desires pregnancy)?",
+    options: ["Letrozole (or clomiphene)", "Metformin alone as first-line for ovulation", "Combined oral contraceptives", "Spironolactone"],
+    answer: 0,
+    exp: "In PCOS desiring pregnancy, letrozole is first-line for ovulation induction (superior live-birth rates to clomiphene). For non-fertility symptoms, OCPs manage cycles/hirsutism, and metformin helps insulin resistance.",
+    expAr: "في متلازمة تكيّس المبايض عند الرغبة بالحمل، ليتروزول هو الخط الأول لتحريض الإباضة (معدلات ولادة حية أعلى من كلوميفين). للأعراض غير الإنجابية تُدار الدورات/الشعرانية بحبوب منع الحمل، والميتفورمين يفيد مقاومة الإنسولين."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A postmenopausal woman presents with new painless vaginal bleeding. Most important initial investigation?",
+    options: ["Endometrial biopsy (and/or transvaginal ultrasound of endometrial thickness)", "Reassurance and observation", "Pap smear only", "Serum CA-125 only"],
+    answer: 0,
+    exp: "Postmenopausal bleeding is endometrial cancer until proven otherwise. Evaluate with transvaginal ultrasound (endometrial stripe) and endometrial biopsy for tissue diagnosis.",
+    expAr: "النزف بعد سن اليأس يُعتبر سرطان بطانة الرحم حتى يُثبت العكس. يُقيّم بالتصوير فوق الصوتي عبر المهبل (سماكة البطانة) وخزعة بطانة الرحم للتشخيص النسيجي."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A term newborn's mother is HBsAg positive. What should be given to the neonate?",
+    options: ["Hepatitis B vaccine plus hepatitis B immunoglobulin (HBIG) within 12 hours", "Only routine vaccination at 2 months", "Antiviral therapy for the newborn only", "No intervention needed"],
+    answer: 0,
+    exp: "Infants of HBsAg-positive mothers should receive both the hepatitis B vaccine and HBIG within 12 hours of birth to prevent perinatal transmission (>90% effective).",
+    expAr: "رضّع الأمهات إيجابيات HBsAg يجب أن يتلقوا لقاح التهاب الكبد B والغلوبولين المناعي (HBIG) خلال 12 ساعة من الولادة لمنع الانتقال حول الولادة (فعالية >90%)."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A woman at 36 weeks with known placenta previa presents with painless bleeding. What is the preferred mode of delivery?",
+    options: ["Cesarean section", "Vaginal delivery with close monitoring", "Vacuum-assisted vaginal delivery", "Forceps delivery"],
+    answer: 0,
+    exp: "Placenta previa (placenta covering the internal os) mandates cesarean delivery; vaginal delivery would cause catastrophic hemorrhage. Avoid digital vaginal exams.",
+    expAr: "المشيمة المنزاحة (مغطية لفوهة عنق الرحم الداخلية) تستوجب ولادة قيصرية؛ فالولادة المهبلية قد تسبب نزفاً كارثياً. تُتجنَّب الفحوص المهبلية بالإصبع."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A 32-year-old at 10 weeks with heavy bleeding, an open cervical os, and products of conception seen at the os. Diagnosis?",
+    options: ["Inevitable abortion", "Threatened abortion", "Complete abortion", "Missed abortion"],
+    answer: 0,
+    exp: "An open cervical os with bleeding and passage of products indicates inevitable (or incomplete) abortion. A closed os with bleeding is threatened; a missed abortion has a closed os with a nonviable pregnancy retained.",
+    expAr: "فتح عنق الرحم مع نزف ومرور نواتج الحمل يدل على إجهاض حتمي (أو غير كامل). عنق مغلق مع نزف = إجهاض مهدد؛ والإجهاض الفائت عنق مغلق مع احتباس حمل غير حي."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A pregnant woman at term develops sudden dyspnea, hypotension, hypoxia, and DIC immediately after delivery. Most likely diagnosis?",
+    options: ["Amniotic fluid embolism", "Pulmonary edema", "Eclampsia", "Aspiration pneumonia"],
+    answer: 0,
+    exp: "Sudden cardiovascular collapse, hypoxia, and DIC during or right after delivery is amniotic fluid embolism—a rare, often fatal obstetric emergency requiring aggressive supportive resuscitation.",
+    expAr: "انهيار قلبي وعائي مفاجئ ونقص أكسجة وتخثر منتشر داخل الأوعية أثناء الولادة أو بعدها مباشرة = صمة السائل السلوي—طارئ توليدي نادر غالباً مميت يتطلب إنعاشاً داعماً مكثفاً."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A 50-year-old woman with hot flashes, night sweats, vaginal dryness, and 14 months of amenorrhea. Which lab supports menopause?",
+    options: ["Elevated FSH", "Elevated estradiol", "Low LH", "Elevated prolactin"],
+    answer: 0,
+    exp: "Menopause (≥12 months amenorrhea) is characterized by ovarian failure with LOW estradiol and HIGH FSH (loss of negative feedback). Symptoms may be managed with hormone therapy in appropriate candidates.",
+    expAr: "سن اليأس (انقطاع طمث ≥12 شهراً) يتميز بفشل مبيضي مع انخفاض الإستراديول وارتفاع FSH (فقد التلقيم الراجع السلبي). تُدار الأعراض بالعلاج الهرموني في المرشحات المناسبات."
+  },
+  {
+    topic: "OB-GYN",
+    q: "Which contraceptive method is contraindicated in a 36-year-old woman who smoks heavily and has migraines with aura?",
+    options: ["Combined estrogen-progestin oral contraceptives", "Progestin-only pill", "Copper IUD", "Levonorgestrel IUD"],
+    answer: 0,
+    exp: "Combined (estrogen-containing) contraceptives are contraindicated in migraine with aura and in smokers ≥35 due to increased stroke/VTE risk. Progestin-only methods and IUDs are safer alternatives.",
+    expAr: "موانع الحمل المركبة (الحاوية على إستروجين) ممنوعة في الشقيقة مع أورة وعند المدخنات ≥35 بسبب زيادة خطر السكتة/الخثار الوريدي. الطرق البروجستينية فقط واللوالب أكثر أماناً."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A woman at 34 weeks has severe preeclampsia with low platelets, elevated liver enzymes, and hemolysis. Diagnosis?",
+    options: ["HELLP syndrome", "Acute fatty liver of pregnancy", "Gestational thrombocytopenia", "Viral hepatitis"],
+    answer: 0,
+    exp: "HELLP (Hemolysis, Elevated Liver enzymes, Low Platelets) is a severe variant of preeclampsia. Management includes magnesium sulfate, BP control, and delivery (definitive treatment).",
+    expAr: "متلازمة HELLP (انحلال دم، ارتفاع إنزيمات الكبد، نقص صفيحات) نوع شديد من مقدمات الارتعاج. يشمل التدبير كبريتات المغنيسيوم وضبط الضغط والولادة (العلاج النهائي)."
+  },
+  {
+    topic: "OB-GYN",
+    q: "An Rh-negative pregnant woman with an Rh-positive partner. When is anti-D immunoglobulin (RhoGAM) routinely given?",
+    options: ["At ~28 weeks and within 72 hours postpartum (if baby Rh-positive)", "Only if the baby is Rh-negative", "Every trimester regardless", "Never, unless the mother is already sensitized"],
+    answer: 0,
+    exp: "To prevent Rh alloimmunization, anti-D immunoglobulin is given at ~28 weeks and within 72 hours after delivery of an Rh-positive infant, and after any sensitizing event (bleeding, trauma, procedures).",
+    expAr: "لمنع التمنيع بعامل ريزوس، يُعطى الغلوبولين المناعي anti-D عند نحو 28 أسبوعاً وخلال 72 ساعة بعد ولادة طفل إيجابي الريزوس، وبعد أي حدث ممنِّع (نزف، رض، إجراءات)."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A 27-year-old with a positive pregnancy test and β-hCG of 2500 but no intrauterine gestational sac on transvaginal ultrasound (above the discriminatory zone). Most concerning diagnosis?",
+    options: ["Ectopic pregnancy", "Normal early intrauterine pregnancy", "Complete molar pregnancy", "Missed abortion"],
+    answer: 0,
+    exp: "When β-hCG is above the discriminatory zone (~1500–2000 for TVUS) with no intrauterine sac, ectopic pregnancy must be excluded. Correlate with serial β-hCG and clinical stability.",
+    expAr: "عندما يكون β-hCG فوق المنطقة التمييزية (~1500-2000 للتصوير عبر المهبل) دون كيس داخل الرحم، يجب استبعاد الحمل الهاجر. يُربَط بمتابعة β-hCG المتسلسل والاستقرار السريري."
+  },
+  {
+    topic: "OB-GYN",
+    q: "During the second stage of labor, the fetal head delivers but the shoulders are stuck (turtle sign). First maneuver?",
+    options: ["McRoberts maneuver with suprapubic pressure", "Immediate cesarean section", "Fundal pressure", "Strong downward traction on the head"],
+    answer: 0,
+    exp: "Shoulder dystocia is managed first with the McRoberts maneuver (hyperflexed maternal hips) plus suprapubic pressure. Avoid fundal pressure and excessive head traction (risk of brachial plexus injury).",
+    expAr: "عسر ولادة الكتف يُدار أولاً بمناورة ماكروبرتس (ثني وركي الأم بشدة) مع ضغط فوق العانة. تُتجنَّب ضغط القاع والشدّ المفرط على الرأس (خطر أذية الضفيرة العضدية)."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A 30-year-old with cyclic pelvic pain, dysmenorrhea, dyspareunia, and infertility; exam shows tender nodularity in the posterior cul-de-sac. Most likely diagnosis?",
+    options: ["Endometriosis", "Pelvic inflammatory disease", "Uterine fibroids", "Ovarian cyst"],
+    answer: 0,
+    exp: "Cyclic pain, dysmenorrhea, deep dyspareunia, infertility, and uterosacral nodularity suggest endometriosis. Laparoscopy is the diagnostic gold standard; treat with NSAIDs, hormonal suppression, or surgery.",
+    expAr: "ألم دوري وعسر طمث وعسر جماع عميق وعقم وعقيدات رباط عجزي رحمي توحي بالانتباذ البطاني الرحمي. التنظير البطني هو المعيار الذهبي للتشخيص؛ ويُعالَج بمضادات الالتهاب أو الكبت الهرموني أو الجراحة."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A sexually active 22-year-old with lower abdominal pain, fever, cervical motion tenderness, and adnexal tenderness. Diagnosis and management?",
+    options: ["Pelvic inflammatory disease; empiric antibiotics (e.g., ceftriaxone + doxycycline ± metronidazole)", "Ectopic pregnancy; methotrexate", "Ovarian torsion; surgery", "Appendicitis; appendectomy"],
+    answer: 0,
+    exp: "Cervical motion, uterine, or adnexal tenderness in a young sexually active woman indicates PID. Treat empirically to cover gonorrhea/chlamydia (ceftriaxone + doxycycline, add metronidazole for anaerobes) to prevent infertility.",
+    expAr: "إيلام حركة عنق الرحم أو الرحم أو الملحقات عند شابة نشطة جنسياً = داء التهاب الحوض. يُعالَج تجريبياً لتغطية السيلان/المتدثرة (سيفترياكسون + دوكسيسيكلين، مع ميترونيدازول للاهوائيات) لمنع العقم."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A 45-year-old with heavy menstrual bleeding and an enlarged, irregular, firm uterus; ultrasound shows multiple well-defined myometrial masses. Most likely diagnosis?",
+    options: ["Uterine leiomyomas (fibroids)", "Endometrial carcinoma", "Adenomyosis", "Ovarian cancer"],
+    answer: 0,
+    exp: "Menorrhagia with an enlarged, irregular, firm uterus and well-defined myometrial masses on ultrasound indicates uterine fibroids (leiomyomas). Management ranges from observation to medical therapy or myomectomy/hysterectomy.",
+    expAr: "غزارة طمث مع رحم متضخم غير منتظم قاسٍ وكتل عضلية جيدة الحدود بالتصوير = أورام عضلية ليفية رحمية. يتراوح التدبير بين المراقبة والعلاج الدوائي واستئصال الورم/الرحم."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A woman with a prior classical (vertical) cesarean scar in labor suddenly has severe abdominal pain, loss of fetal station, cessation of contractions, and hemodynamic instability. Diagnosis?",
+    options: ["Uterine rupture", "Placenta previa", "Placental abruption", "Amniotic fluid embolism"],
+    answer: 0,
+    exp: "Sudden severe pain, loss of station, abnormal fetal heart rate, and maternal instability in a woman with a prior uterine scar is uterine rupture—an emergency requiring immediate laparotomy and delivery.",
+    expAr: "ألم شديد مفاجئ وفقد نزول الرأس وشذوذ نبض الجنين وعدم استقرار الأم عند امرأة بندبة رحمية سابقة = تمزق الرحم—طارئ يتطلب فتح بطن وولادة فوريين."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A pregnant woman is found to have asymptomatic bacteriuria on routine urine culture. Best management?",
+    options: ["Treat with antibiotics", "No treatment unless symptomatic", "Repeat culture in the third trimester only", "Cranberry juice only"],
+    answer: 0,
+    exp: "Unlike non-pregnant adults, asymptomatic bacteriuria in pregnancy should be treated to prevent pyelonephritis, preterm labor, and low birth weight. Use pregnancy-safe antibiotics per culture.",
+    expAr: "بخلاف غير الحوامل، يجب علاج البيلة الجرثومية اللاعرضية في الحمل لمنع التهاب الحويضة والكلية والولادة المبكرة وانخفاض وزن الولادة. تُستخدم مضادات آمنة في الحمل حسب الزرع."
+  },
+  {
+    topic: "OB-GYN",
+    q: "A woman at 35 weeks reports decreased fetal movements. Which is the appropriate first-line assessment of fetal well-being?",
+    options: ["Non-stress test (cardiotocography)", "Immediate cesarean section", "Amniocentesis", "Maternal serum AFP"],
+    answer: 0,
+    exp: "Decreased fetal movements are evaluated first with a non-stress test (CTG); if non-reassuring, proceed to a biophysical profile or further assessment, and consider delivery based on findings.",
+    expAr: "نقص حركة الجنين يُقيّم أولاً باختبار عدم الإجهاد (CTG)؛ وإذا كان غير مطمئن يُتابَع بالملف الفيزيائي الحيوي أو تقييم إضافي، ويُدرَس التوليد حسب الموجودات."
+  },
+  {
+    topic: "OB-GYN",
+    q: "The most common cause of first-trimester spontaneous abortion is:",
+    options: ["Chromosomal abnormalities of the embryo", "Maternal infection", "Uterine anomalies", "Cervical insufficiency"],
+    answer: 0,
+    exp: "Chromosomal abnormalities (e.g., autosomal trisomies) are the most common cause of first-trimester miscarriage. Cervical insufficiency typically causes painless second-trimester loss.",
+    expAr: "الشذوذات الصبغية (مثل التثلثات الجسمية) هي السبب الأشيع لإجهاض الثلث الأول. أما قصور عنق الرحم فيسبب عادةً فقداناً غير مؤلم في الثلث الثاني."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A patient with bipolar disorder on lithium develops tremor, ataxia, confusion, and vomiting; recently started an ACE inhibitor and an NSAID. Most likely cause?",
+    options: ["Lithium toxicity", "Serotonin syndrome", "Neuroleptic malignant syndrome", "Anticholinergic delirium"],
+    answer: 0,
+    exp: "Coarse tremor, ataxia, confusion, and GI upset with lithium indicate toxicity; NSAIDs, ACE inhibitors, thiazides, and dehydration reduce renal lithium clearance and raise levels. Stop lithium, hydrate, and consider dialysis if severe.",
+    expAr: "رعاش خشن وترنّح وتشوّش واضطراب هضمي مع الليثيوم تدل على التسمم؛ ومضادات الالتهاب ومثبطات ACE والثيازيدات والجفاف تقلل إطراح الليثيوم الكلوي وترفع مستواه. يُوقَف الليثيوم وتُعطى سوائل ويُدرَس الغسيل عند الشدة."
+  },
+  {
+    topic: "Psychiatry",
+    q: "Which is a recognized long-term risk of first-generation (typical) antipsychotics like haloperidol?",
+    options: ["Tardive dyskinesia", "Weight gain and diabetes as the predominant risk", "Agranulocytosis requiring weekly monitoring", "QT prolongation only"],
+    answer: 0,
+    exp: "Typical (high-potency) antipsychotics carry a higher risk of extrapyramidal symptoms and tardive dyskinesia. Metabolic side effects predominate with atypicals; clozapine specifically causes agranulocytosis.",
+    expAr: "مضادات الذهان النموذجية (عالية الفعالية) تحمل خطراً أعلى للأعراض خارج الهرمية وخلل الحركة المتأخر. الآثار الاستقلابية تسود مع اللانمطية؛ والكلوزابين تحديداً يسبب ندرة المحببات."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A 25-year-old has recurrent, unexpected panic attacks with palpitations, sweating, and fear of dying, plus persistent worry about future attacks. First-line long-term pharmacotherapy?",
+    options: ["An SSRI", "Long-term benzodiazepine monotherapy", "Antipsychotic", "Lithium"],
+    answer: 0,
+    exp: "SSRIs (or SNRIs) are first-line long-term treatment for panic disorder, combined with CBT. Benzodiazepines are only for short-term relief due to dependence risk.",
+    expAr: "مثبطات استرداد السيروتونين الانتقائية (أو SNRIs) هي الخط الأول طويل الأمد لاضطراب الهلع مع العلاج المعرفي السلوكي. البنزوديازيبينات لتخفيف قصير الأمد فقط بسبب خطر الاعتماد."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A patient stops heavy alcohol use and 48–72 hours later develops confusion, agitation, tremor, hallucinations, tachycardia, and fever. Diagnosis and treatment?",
+    options: ["Delirium tremens; benzodiazepines", "Wernicke encephalopathy; thiamine only", "Opioid withdrawal; methadone", "Serotonin syndrome; cyproheptadine"],
+    answer: 0,
+    exp: "Delirium tremens (peaks 48–96 h after cessation) features autonomic instability, confusion, and hallucinations; it is life-threatening and treated with benzodiazepines (plus thiamine and supportive care).",
+    expAr: "هذيان الارتعاش (ذروته 48-96 ساعة بعد التوقف) يتميز بعدم استقرار ذاتي وتشوّش وهلوسات؛ مهدد للحياة ويُعالَج بالبنزوديازيبينات (مع الثيامين والدعم)."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A 30-year-old woman has at least 6 months of excessive worry about many things, with restlessness, fatigue, irritability, muscle tension, and poor sleep. Most likely diagnosis?",
+    options: ["Generalized anxiety disorder", "Panic disorder", "Obsessive-compulsive disorder", "Major depressive disorder"],
+    answer: 0,
+    exp: "Excessive, difficult-to-control worry about multiple domains for ≥6 months with somatic symptoms (tension, fatigue, poor sleep) defines generalized anxiety disorder. First-line treatment: SSRI/SNRI and CBT.",
+    expAr: "قلق مفرط يصعب ضبطه حول مجالات متعددة لمدة ≥6 أشهر مع أعراض جسدية (توتر، تعب، نوم سيئ) = اضطراب القلق المعمم. الخط الأول: SSRI/SNRI والعلاج المعرفي السلوكي."
+  },
+  {
+    topic: "Psychiatry",
+    q: "One month after a life-threatening car accident, a patient has intrusive memories, nightmares, hypervigilance, avoidance, and negative mood lasting over a month. Diagnosis?",
+    options: ["Post-traumatic stress disorder", "Acute stress disorder", "Adjustment disorder", "Panic disorder"],
+    answer: 0,
+    exp: "Symptoms (re-experiencing, avoidance, hyperarousal, negative cognitions) persisting beyond 1 month after trauma define PTSD. Acute stress disorder is the same picture lasting 3 days to 1 month. Trauma-focused psychotherapy ± SSRIs is used.",
+    expAr: "أعراض (إعادة معايشة، تجنّب، فرط استثارة، أفكار سلبية) مستمرة أكثر من شهر بعد الرضح = اضطراب ما بعد الصدمة. أما اضطراب الكرب الحاد فنفس الصورة لمدة 3 أيام إلى شهر. يُستخدم العلاج النفسي المركّز على الصدمة ± SSRIs."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A young woman with a body weight far below normal, intense fear of gaining weight, and a distorted body image, with amenorrhea. Most dangerous complication to monitor during refeeding?",
+    options: ["Refeeding syndrome (hypophosphatemia, arrhythmias)", "Hyperkalemia", "Hyperglycemia", "Metabolic acidosis"],
+    answer: 0,
+    exp: "Anorexia nervosa risks refeeding syndrome when nutrition is reintroduced—characterized by hypophosphatemia, hypokalemia, hypomagnesemia, fluid shifts, and cardiac arrhythmias. Refeed slowly and replete electrolytes.",
+    expAr: "القهم العصبي يعرّض لمتلازمة إعادة التغذية عند إعادة التغذية—وتتميز بنقص الفوسفات والبوتاسيوم والمغنيسيوم وتحولات السوائل واضطرابات نظم القلب. يجب إعادة التغذية ببطء وتعويض الشوارد."
+  },
+  {
+    topic: "Psychiatry",
+    q: "Which antidepressant is most associated with a hypertensive crisis when combined with tyramine-rich foods?",
+    options: ["Monoamine oxidase inhibitor (MAOI)", "SSRI", "Tricyclic antidepressant", "Bupropion"],
+    answer: 0,
+    exp: "MAOIs can precipitate a tyramine-induced hypertensive crisis (aged cheeses, cured meats, wine). They also risk serotonin syndrome with serotonergic drugs, requiring washout periods.",
+    expAr: "مثبطات أكسيداز أحادي الأمين (MAOIs) قد تسبب نوبة ارتفاع ضغط بسبب التيرامين (أجبان معتّقة، لحوم مقددة، نبيذ). وتخاطر أيضاً بمتلازمة السيروتونين مع الأدوية السيروتونينية، وتتطلب فترات توقف."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A patient reports low mood, anhedonia, and neurovegetative symptoms for 3 weeks with active suicidal ideation and a plan. Most appropriate disposition?",
+    options: ["Urgent psychiatric evaluation and likely hospitalization for safety", "Outpatient follow-up in one month", "Reassurance and sleep hygiene only", "Start an SSRI and discharge without follow-up"],
+    answer: 0,
+    exp: "Active suicidal ideation with a plan and intent is a psychiatric emergency requiring urgent evaluation and often inpatient admission to ensure safety. Under Israeli law, a District Psychiatrist can order involuntary hospitalization if there is imminent danger.",
+    expAr: "الأفكار الانتحارية الفعّالة مع خطة ونية طارئ نفسي يتطلب تقييماً عاجلاً وغالباً إدخالاً لضمان السلامة. وبموجب القانون الإسرائيلي يمكن للطبيب النفسي اللوائي إصدار أمر إدخال إجباري عند وجود خطر وشيك."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A patient on clozapine must have regular monitoring of which parameter due to a serious adverse effect?",
+    options: ["Absolute neutrophil count (agranulocytosis)", "Serum calcium", "Thyroid function", "Uric acid"],
+    answer: 0,
+    exp: "Clozapine can cause life-threatening agranulocytosis, requiring regular absolute neutrophil count monitoring. It is reserved for treatment-resistant schizophrenia and also lowers seizure threshold and can cause myocarditis.",
+    expAr: "الكلوزابين قد يسبب ندرة محببات مهددة للحياة، ويتطلب مراقبة منتظمة للعدد المطلق للعدلات. يُحفَظ للفصام المقاوم للعلاج، ويخفض عتبة الاختلاج وقد يسبب التهاب عضلة القلب."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A 40-year-old with 6 months of depressed mood most of the day, plus low energy and poor concentration, but never meeting full criteria for a major depressive episode and never symptom-free for more than 2 months. Over 2 years this is called?",
+    options: ["Persistent depressive disorder (dysthymia)", "Major depressive disorder", "Cyclothymia", "Bipolar II disorder"],
+    answer: 0,
+    exp: "Chronic depressive symptoms for ≥2 years (≥1 year in children/adolescents) that don't meet full MDE criteria continuously define persistent depressive disorder (dysthymia).",
+    expAr: "أعراض اكتئابية مزمنة لمدة ≥سنتين (≥سنة عند الأطفال/المراهقين) لا تحقق معايير النوبة الاكتئابية الكبرى باستمرار = الاضطراب الاكتئابي المستمر (عُسر المزاج)."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A 20-year-old man has 1 week of elevated, expansive mood, decreased need for sleep, grandiosity, pressured speech, and reckless spending, causing marked impairment. Diagnosis?",
+    options: ["Manic episode (bipolar I disorder)", "Hypomanic episode", "Major depressive episode", "Schizoaffective disorder"],
+    answer: 0,
+    exp: "A distinct period (≥1 week or any duration if hospitalized) of elevated/irritable mood with ≥3 manic symptoms causing marked impairment or hospitalization defines a manic episode (bipolar I). Hypomania is milder (≥4 days) without marked impairment/psychosis.",
+    expAr: "فترة متميزة (≥أسبوع أو أي مدة عند الاستشفاء) من مزاج مرتفع/متهيّج مع ≥3 أعراض هوسية تسبب خللاً واضحاً أو استشفاءً = نوبة هوس (ثنائي القطب I). أما الهوس الخفيف فأخف (≥4 أيام) دون خلل واضح/ذهان."
+  },
+  {
+    topic: "Psychiatry",
+    q: "An elderly hospitalized patient develops acute, fluctuating confusion with inattention and altered consciousness over hours, worse at night, after a urinary tract infection. Most likely diagnosis?",
+    options: ["Delirium", "Dementia", "Major depression", "Schizophrenia"],
+    answer: 0,
+    exp: "Acute onset, fluctuating course, inattention, and altered level of consciousness indicate delirium, usually from an underlying medical cause (infection, drugs, metabolic). Identify and treat the cause; dementia is chronic and progressive with stable consciousness.",
+    expAr: "بداية حادة ومسار متذبذب ونقص انتباه وتبدّل مستوى الوعي تدل على الهذيان، وغالباً بسبب طبي كامن (عدوى، أدوية، استقلابي). يُحدَّد السبب ويُعالَج؛ أما الخرف فمزمن تدريجي مع وعي ثابت."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A patient with recurrent, intrusive, unwanted thoughts and repetitive behaviors performed to reduce anxiety, recognized as excessive. First-line treatment?",
+    options: ["SSRI (often higher dose) and cognitive-behavioral therapy with exposure and response prevention", "Benzodiazepines", "Antipsychotic monotherapy", "Lithium"],
+    answer: 0,
+    exp: "Obsessive-compulsive disorder responds best to SSRIs (frequently at higher doses than for depression) and CBT with exposure and response prevention (ERP). Clomipramine is an alternative.",
+    expAr: "الوسواس القهري يستجيب أفضل لمثبطات السيروتونين (غالباً بجرعات أعلى من الاكتئاب) والعلاج المعرفي السلوكي بالتعرض ومنع الاستجابة (ERP). كلوميبرامين بديل."
+  },
+  {
+    topic: "Psychiatry",
+    q: "A young adult has had, for over 6 months, deteriorating function with two or more of: delusions, hallucinations, disorganized speech, and negative symptoms. This chronic psychotic disorder is:",
+    options: ["Schizophrenia", "Schizophreniform disorder", "Brief psychotic disorder", "Delusional disorder"],
+    answer: 0,
+    exp: "Two or more core psychotic symptoms with continuous signs for ≥6 months and functional decline meet criteria for schizophrenia. Schizophreniform lasts 1–6 months; brief psychotic disorder <1 month; delusional disorder has non-bizarre delusions without other criteria.",
+    expAr: "وجود عرضين ذهانيين أساسيين أو أكثر مع استمرار العلامات ≥6 أشهر وتدهور وظيفي يحقق معايير الفصام. الشكل الفصامي 1-6 أشهر؛ والذهاني الوجيز <شهر؛ واضطراب الضلالات ضلالات غير غريبة دون بقية المعايير."
+  },
+  {
+    topic: "Internal Medicine",
+    q: "A 26-year-old woman with fatigue, weight gain, and a diffusely enlarged non-tender goiter; TSH high, and anti-thyroid peroxidase (anti-TPO) antibodies strongly positive. Most likely diagnosis?",
+    options: ["Hashimoto thyroiditis", "Graves disease", "Subacute thyroiditis", "Iodine deficiency"],
+    answer: 0,
+    exp: "Hypothyroidism with a firm goiter and high anti-TPO antibodies indicates Hashimoto (chronic autoimmune) thyroiditis, the most common cause of hypothyroidism in iodine-sufficient areas. Treat with levothyroxine.",
+    expAr: "قصور درقية مع دراق قاسٍ وارتفاع أضداد بيروكسيداز الدرقية = التهاب هاشيموتو (المناعي المزمن)، وهو السبب الأشيع لقصور الدرقية في مناطق كفاية اليود. يُعالَج بالليفوثيروكسين."
+  },
+  {
+    topic: "Surgery",
+    q: "A 45-year-old develops a hot, swollen, tender leg after prolonged immobilization; ultrasound confirms proximal deep vein thrombosis with no bleeding risk. Best initial treatment?",
+    options: ["Therapeutic anticoagulation (LMWH or a DOAC)", "Immediate IVC filter for all", "Aspirin only", "Bed rest and leg elevation alone"],
+    answer: 0,
+    exp: "Proximal DVT is treated with therapeutic anticoagulation (LMWH bridging to warfarin, or a DOAC). IVC filters are reserved for patients with a contraindication to anticoagulation or recurrent PE despite therapy.",
+    expAr: "الخثار الوريدي العميق الداني يُعالَج بمضاد تخثر علاجي (هيبارين منخفض الوزن الجزيئي جسراً للوارفارين، أو DOAC). تُحجَز مرشحات الوريد الأجوف للمرضى الممنوعين من التخثير أو الصمة الرئوية المتكررة رغم العلاج."
+  },
+  {
+    topic: "Pediatrics",
+    q: "A 2-year-old has a barking cough, inspiratory stridor, and hoarseness after a viral prodrome (croup). Recommended treatment?",
+    options: ["Single-dose dexamethasone (plus nebulized epinephrine if severe)", "Empiric IV ceftriaxone", "Nebulized salbutamol", "Immediate tracheostomy"],
+    answer: 0,
+    exp: "Viral croup (laryngotracheobronchitis) is treated with dexamethasone for all severities; nebulized epinephrine is added for moderate-to-severe stridor at rest. Antibiotics are not indicated.",
+    expAr: "الخنّاق الفيروسي (التهاب الحنجرة والرغامى والقصبات) يُعالَج بالديكساميثازون لكل الدرجات؛ ويُضاف الأدرينالين المرذوذ للصرير المتوسط-الشديد أثناء الراحة. المضادات الحيوية غير مستطبة."
+  },
+  // ADDMORE
+];
+
+const quizEl = document.getElementById('quiz');
+const filtersEl = document.getElementById('filters');
+const topics = ["All", ...Array.from(new Set(questions.map(q => q.topic)))];
+let activeFilter = "All";
+let answeredSet = new Set();
+let correctCount = 0;
+
+function buildFilters() {
+  filtersEl.innerHTML = "";
+  topics.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'filter-btn' + (t === activeFilter ? ' active' : '');
+    const count = t === "All" ? questions.length : questions.filter(q => q.topic === t).length;
+    b.textContent = `${t} (${count})`;
+    b.onclick = () => { activeFilter = t; buildFilters(); render(); };
+    filtersEl.appendChild(b);
+  });
+}
+
+function render() {
+  quizEl.innerHTML = "";
+  const list = questions.map((q, i) => ({ q, i }))
+    .filter(x => activeFilter === "All" || x.q.topic === activeFilter);
+
+  list.forEach(({ q, i }) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'card-' + i;
+
+    const letters = ['A', 'B', 'C', 'D', 'E'];
+    let opts = '';
+    q.options.forEach((opt, oi) => {
+      opts += `<li class="option" data-q="${i}" data-o="${oi}">
+                 <span class="letter">${letters[oi]}</span><span>${opt}</span>
+               </li>`;
+    });
+
+    card.innerHTML = `
+      <span class="q-topic">${q.topic}</span>
+      <div class="q-text"><span class="q-num">Q${i + 1}.</span> ${q.q}</div>
+      <ul class="options">${opts}</ul>
+      <div class="explanation" id="exp-${i}"></div>
+    `;
+    quizEl.appendChild(card);
+  });
+
+  document.querySelectorAll('.option').forEach(el => {
+    el.addEventListener('click', onAnswer);
+  });
+  updateScore();
+}
+
+function onAnswer(e) {
+  const li = e.currentTarget;
+  const qi = +li.dataset.q;
+  const oi = +li.dataset.o;
+  const card = document.getElementById('card-' + qi);
+  if (card.dataset.done) return;
+  card.dataset.done = "1";
+
+  const q = questions[qi];
+  const optionEls = card.querySelectorAll('.option');
+  optionEls.forEach((el, idx) => {
+    el.classList.add('disabled');
+    if (idx === q.answer) el.classList.add('correct');
+    if (idx === oi && oi !== q.answer) el.classList.add('wrong');
+  });
+
+  const isRight = oi === q.answer;
+  if (isRight) correctCount++;
+  answeredSet.add(qi);
+
+  const expEl = document.getElementById('exp-' + qi);
+  expEl.innerHTML = `
+    <div class="verdict ${isRight ? 'right' : 'wrongv'}">
+      ${isRight ? '✓ Correct!' : '✗ Incorrect — correct answer: ' + ['A','B','C','D','E'][q.answer]}
+    </div>
+    <div>${q.exp}</div>
+    <div class="ar"><span class="label">الشرح بالعربية:</span> ${q.expAr}</div>
+  `;
+  expEl.classList.add('show');
+  updateScore();
+}
+
+function updateScore() {
+  const answered = answeredSet.size;
+  const total = questions.length;
+  document.getElementById('answered').textContent = answered;
+  document.getElementById('total').textContent = total;
+  document.getElementById('correct').textContent = correctCount;
+  const pct = answered ? Math.round((correctCount / answered) * 100) : 0;
+  const pctEl = document.getElementById('pct');
+  pctEl.textContent = pct + '%';
+  pctEl.style.color = pct >= 60 ? 'var(--good)' : 'var(--bad)';
+  document.getElementById('progbar').style.width = (answered / total * 100) + '%';
+}
+
+function resetQuiz() {
+  answeredSet = new Set();
+  correctCount = 0;
+  render();
+}
+
+function init() {
+  try {
+    buildFilters();
+    render();
+  } catch (err) {
+    var el = document.getElementById('quiz');
+    if (el) {
+      el.innerHTML = '<div class="q-card" style="color:#fca5a5">' +
+        '<strong>Something blocked the quiz from loading.</strong><br>' +
+        'Error: ' + (err && err.message ? err.message : err) + '<br><br>' +
+        'If you are viewing this inside an email/Drive/WhatsApp preview, that viewer is stripping JavaScript. ' +
+        'Save the file to your phone and open it in a real browser (Safari or Chrome).</div>';
+    }
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
